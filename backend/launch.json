@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Launch EmotionApplication",
+      "request": "launch",
+      "mainClass": "com.emotion.EmotionApplication",
+      "projectName": "emotion-recognition"
+    }
+  ]
+}

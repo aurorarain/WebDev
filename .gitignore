@@ -1,0 +1,32 @@
+# Dependencies (restored by npm install / mvn clean package)
+node_modules/
+target/
+
+# Build artifacts
+*.class
+*.jar
+*.pyc
+
+# Python cache
+__pycache__/
+
+# OS files
+.DS_Store
+*.log
+
+# IDE config
+.idea/
+
+# Claude Code workspace (contains server passwords)
+.claude/
+
+# OpenClaw workspace
+.openclaw/
+
+# Training artifacts (not needed to run the app)
+training/deploy.py
+training/*.pth
+training/*.onnx
+
+# Personal notes (contains tokens)
+Note.txt

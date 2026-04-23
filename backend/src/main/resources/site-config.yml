@@ -1,0 +1,21 @@
+site:
+  brand: "SingularityWalk"
+  slogan: "Walking the edge of technology and curiosity"
+  about:
+    name: "Jimmy"
+    bio: "A passionate developer exploring the frontiers of AI and web technology."
+    avatar: "/images/avatar.jpg"
+    location: "China"
+    email: "admin@deepzho.top"
+    github: "https://github.com/aurorarain"
+    skills:
+      - category: "Backend"
+        items: ["Java", "Spring Boot", "MySQL", "Python"]
+      - category: "Frontend"
+        items: ["React", "TypeScript", "Tailwind CSS"]
+      - category: "AI/ML"
+        items: ["OpenCV", "ONNX", "PyTorch"]
+    education:
+      - school: "University"
+        degree: "Computer Science"
+        period: "2020 - 2024"
