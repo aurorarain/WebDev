@@ -1,34 +1,32 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, LogIn, Settings } from 'lucide-react';
+import { useLoginModal } from '../../contexts/LoginModalContext';
 
 /**
  * 顶部导航栏组件
  * - 滚动感知：顶部透明，滚动后添加背景模糊和底部边框
  * - 移动端汉堡菜单
- * - 根据登录状态显示 admin 或 login 图标
+ * - 未登录点击图标弹出登录弹窗，已登录跳转 admin
  */
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const { open: openLogin } = useLoginModal();
 
-  // 监听滚动事件，超过 20px 切换为半透明背景
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // 路由切换时自动关闭移动端菜单
   useEffect(() => {
     setMobileOpen(false);
   }, [location]);
 
-  // 检查是否已登录（仅判断 token 是否存在）
   const isAuthenticated = !!localStorage.getItem('token');
 
-  // 导航链接配置
   const navLinks = [
     { to: '/', label: 'Home' },
     { to: '/about', label: 'About' },
@@ -47,7 +45,6 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* 品牌名 */}
           <Link
             to="/"
             className="font-display font-bold text-xl text-sw-accent hover:text-sw-accent-2 transition-colors"
@@ -70,7 +67,6 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            {/* 登录状态图标：已登录显示 admin 入口，否则显示 login */}
             {isAuthenticated ? (
               <Link
                 to="/admin"
@@ -79,12 +75,12 @@ export default function Navbar() {
                 <Settings size={20} />
               </Link>
             ) : (
-              <Link
-                to="/login"
+              <button
+                onClick={openLogin}
                 className="text-sw-muted hover:text-sw-accent transition-colors"
               >
                 <LogIn size={20} />
-              </Link>
+              </button>
             )}
           </div>
 
@@ -113,7 +109,6 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            {/* 移动端登录状态入口 */}
             {isAuthenticated ? (
               <Link
                 to="/admin"
@@ -122,12 +117,12 @@ export default function Navbar() {
                 Admin Panel
               </Link>
             ) : (
-              <Link
-                to="/login"
+              <button
+                onClick={() => { setMobileOpen(false); openLogin(); }}
                 className="block py-2 text-sm text-sw-muted hover:text-sw-accent"
               >
                 Login
-              </Link>
+              </button>
             )}
           </div>
         )}

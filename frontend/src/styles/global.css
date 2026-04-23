@@ -54,20 +54,6 @@ html, body {
   color: #ffffff;
 }
 
-/* 首页全屏吸附滚动 */
-.snap-container {
-  height: 100vh;
-  overflow-y: auto;
-  scroll-snap-type: y mandatory;
-}
-.snap-section {
-  scroll-snap-align: start;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
 /* 发光效果工具类 — 亮色主题下使用更柔和的紫色光晕 */
 .glow {
   box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);

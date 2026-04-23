@@ -1,7 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import WebsiteLayout from '../components/layout/WebsiteLayout';
 import AdminLayout from '../components/layout/AdminLayout';
-import LoginPage from '../pages/LoginPage';
 import HomePage from '../pages/HomePage';
 import AboutPage from '../pages/AboutPage';
 import ProjectsPage from '../pages/ProjectsPage';
@@ -21,22 +20,15 @@ import AdminFerStats from '../pages/admin/AdminFerStats';
 
 /**
  * 管理员路由守卫
- * 未登录时重定向到登录页
+ * 未登录时重定向到首页（登录通过弹窗完成）
  */
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem('token');
-  if (!token) return <Navigate to="/login" replace />;
+  if (!token) return <Navigate to="/" replace />;
   return <>{children}</>;
 };
 
-/**
- * 路由配置
- * - 公开网站使用 WebsiteLayout（Navbar + Footer）
- * - 管理后台使用 AdminLayout（侧边栏）
- * - 登录页独立无布局
- */
 export const router = createBrowserRouter([
-  // 公开网站路由
   {
     element: <WebsiteLayout />,
     children: [
@@ -50,9 +42,8 @@ export const router = createBrowserRouter([
       { path: '/fer-demo', element: <FerDemoPage /> },
     ],
   },
-  // 登录页（独立，无布局）
-  { path: '/login', element: <LoginPage /> },
-  // 管理后台路由（需要登录）
+  /* /login 重定向到首页，登录通过 Navbar 弹窗完成 */
+  { path: '/login', element: <Navigate to="/" replace /> },
   {
     path: '/admin',
     element: (
@@ -73,6 +64,5 @@ export const router = createBrowserRouter([
       { path: 'profile', element: <ProfilePage /> },
     ],
   },
-  // 兜底：未匹配路由重定向到首页
   { path: '*', element: <Navigate to="/" replace /> },
 ]);

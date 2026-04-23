@@ -1,13 +1,12 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import LoginModal from '../auth/LoginModal';
 
 /**
  * 公开网站布局组件
- * - 顶部 Navbar（固定定位，占据 16 高度）
- * - 中间 Outlet 渲染子路由页面内容
- * - 底部 Footer
- * - 使用 flex 列布局确保 Footer 始终在底部
+ * - Navbar + 页面内容 + Footer
+ * - LoginModal 在 router context 内渲染
  */
 export default function WebsiteLayout() {
   return (
@@ -17,6 +16,7 @@ export default function WebsiteLayout() {
         <Outlet />
       </main>
       <Footer />
+      <LoginModal />
     </div>
   );
 }

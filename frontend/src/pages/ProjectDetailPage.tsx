@@ -1,10 +1,9 @@
-/* 项目详情页 — 展示完整项目信息，支持 Markdown 长描述 */
+/* 项目详情页 — 淡青蓝渐变背景 */
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 
-/* GitHub 图标 — 内联 SVG */
 function GithubIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -22,7 +21,6 @@ export default function ProjectDetailPage() {
   const [project, setProject] = useState<Project | null>(null);
 
   useEffect(() => {
-    // 根据 slug 加载项目详情
     if (slug) {
       siteApi.getProject(slug).then(res => {
         setProject(res.data?.data);
@@ -33,45 +31,57 @@ export default function ProjectDetailPage() {
   if (!project) return <div className="min-h-screen flex items-center justify-center text-sw-muted">Loading...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-20">
-      {/* 返回项目列表 */}
-      <Link to="/projects" className="flex items-center gap-2 text-sw-muted hover:text-sw-text mb-8">
-        <ArrowLeft size={18} /> Back to Projects
-      </Link>
+    <div className="min-h-screen relative" style={{ background: 'linear-gradient(170deg, #f0fdfa 0%, #ccfbf1 35%, #f0f9ff 70%, #ffffff 100%)' }}>
+      <div className="fixed top-[10%] right-[-5%] w-[350px] h-[350px] bg-teal-200/15 rounded-full blur-[100px] pointer-events-none" />
+      <div className="fixed bottom-[5%] left-[-5%] w-[300px] h-[300px] bg-cyan-200/10 rounded-full blur-[80px] pointer-events-none" />
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-4xl font-bold mb-4">{project.title}</h1>
+      <div className="max-w-4xl mx-auto px-4 py-20 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Link to="/projects" className="inline-flex items-center gap-2 text-sw-muted hover:text-sw-text mb-8 transition-colors">
+            <ArrowLeft size={18} /> Back to Projects
+          </Link>
+        </motion.div>
 
-        {/* 技术标签 */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {project.tags?.split(',').map(tag => (
-            <span key={tag} className="text-xs px-3 py-1 bg-sw-accent/10 text-sw-accent rounded-full">
-              {tag.trim()}
-            </span>
-          ))}
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <h1 className="font-display text-4xl font-bold mb-4">{project.title}</h1>
 
-        {/* 外部链接按钮 */}
-        <div className="flex gap-4 mb-8">
-          {project.demoUrl && (
-            <Link to={project.demoUrl}
-              className="px-6 py-2 bg-sw-accent text-white rounded-lg hover:bg-sw-accent/90 transition-all flex items-center gap-2">
-              <ExternalLink size={16} /> Live Demo
-            </Link>
-          )}
-          {project.repoUrl && (
-            <a href={project.repoUrl} target="_blank" rel="noopener noreferrer"
-              className="px-6 py-2 border border-sw-border text-sw-text rounded-lg hover:border-sw-accent transition-all flex items-center gap-2">
-              <GithubIcon size={16} /> Source Code
-            </a>
-          )}
-        </div>
+          <div className="flex flex-wrap gap-2 mb-6">
+            {project.tags?.split(',').map(tag => (
+              <span key={tag} className="text-xs px-3 py-1 bg-white/55 backdrop-blur-sm text-sw-accent rounded-full border border-white/40">
+                {tag.trim()}
+              </span>
+            ))}
+          </div>
 
-        {/* 项目详情（Markdown 渲染） */}
-        <div className="prose max-w-none">
-          <ReactMarkdown>{project.longDescription || project.description}</ReactMarkdown>
-        </div>
-      </motion.div>
+          <div className="flex gap-4 mb-8">
+            {project.demoUrl && (
+              <Link to={project.demoUrl}
+                className="px-6 py-2 bg-sw-accent text-white rounded-full hover:bg-sw-accent/90 transition-all duration-300 flex items-center gap-2 shadow-md shadow-sw-accent/20">
+                <ExternalLink size={16} /> Live Demo
+              </Link>
+            )}
+            {project.repoUrl && (
+              <a href={project.repoUrl} target="_blank" rel="noopener noreferrer"
+                className="px-6 py-2 bg-white/55 backdrop-blur-sm border border-white/50 text-sw-text rounded-full hover:border-sw-accent/40 transition-all duration-300 flex items-center gap-2">
+                <GithubIcon size={16} /> Source Code
+              </a>
+            )}
+          </div>
+
+          {/* Markdown 内容用毛玻璃容器 */}
+          <div className="p-8 bg-white/55 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm prose max-w-none">
+            <ReactMarkdown>{project.longDescription || project.description}</ReactMarkdown>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }

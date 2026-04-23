@@ -31,11 +31,10 @@ export default function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 清除登录凭证并跳转到登录页
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    navigate('/login');
+    navigate('/');
   };
 
   // 判断导航项是否激活（exact 模式精确匹配，否则前缀匹配）
