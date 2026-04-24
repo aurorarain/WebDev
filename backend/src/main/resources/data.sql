@@ -75,21 +75,13 @@ npm run dev
 | POST | `/api/predict` (JSON) | Base64 图片识别 |
 | POST | `/api/predict-realtime` | 摄像头实时识别（多人脸） |
 
-## 模型信息 (V3.0)
+## 模型信息
 
 - 架构：EfficientNet-B3（~12M 参数，ImageNet 预训练）
 - 输入：3 x 300 x 300 RGB 图像
 - 输出：7 类情绪 logits（经 softmax 转为概率）
 - 预处理：ImageNet 标准化
 - 训练方式：两阶段训练（冻结 backbone -> 全量微调）
-
-## 版本历史
-
-| 版本 | 模型 | 数据集 | 验证准确率 | 独立测试 |
-|------|------|--------|------------|----------|
-| V1.0 | ResNet18 | RAF-DB | - | - |
-| V2.0 | ResNet18 | RAF-DB + FER2013 | 84.67% | 2/7 |
-| **V3.0** | **EfficientNet-B3** | **AffectNet** | **73.83%** | **6/7** |
 
 ## 作者
 

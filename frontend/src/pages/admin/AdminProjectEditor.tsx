@@ -170,6 +170,7 @@ export default function AdminProjectEditor() {
         if (result.suggestedStartCmd) setBackendStartCmd(result.suggestedStartCmd);
         if (result.suggestedPort) setBackendPort(result.suggestedPort);
         if (result.suggestedPort) setHealthCheckUrl(`http://localhost:${result.suggestedPort}/api/health`);
+        if (result.readmeContent) setLongDescription(result.readmeContent);
       } else {
         setCloneStatus('error');
         setCloneMessage(result?.message || '拉取失败');
