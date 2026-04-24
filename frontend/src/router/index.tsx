@@ -17,6 +17,7 @@ import AdminProjectList from '../pages/admin/AdminProjectList';
 import AdminProjectEditor from '../pages/admin/AdminProjectEditor';
 import AdminGuestbook from '../pages/admin/AdminGuestbook';
 import AdminFerStats from '../pages/admin/AdminFerStats';
+import ProjectDemoPage from '../pages/ProjectDemoPage';
 
 /**
  * 管理员路由守卫
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
       { path: '/', element: <HomePage /> },
       { path: '/about', element: <AboutPage /> },
       { path: '/projects', element: <ProjectsPage /> },
+      { path: '/projects/:slug/demo', element: <ProjectDemoPage /> },
       { path: '/projects/:slug', element: <ProjectDetailPage /> },
       { path: '/blog', element: <BlogListPage /> },
       { path: '/blog/:slug', element: <BlogPostPage /> },

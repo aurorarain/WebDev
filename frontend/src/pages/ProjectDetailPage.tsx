@@ -1,8 +1,8 @@
-/* 项目详情页 — 淡青蓝渐变背景 */
-import { useEffect, useState } from 'react';
+/* 项目详情页 — 淡青蓝渐变背景 + README 内容展示 */
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ExternalLink, BookOpen, AlertCircle } from 'lucide-react';
 
 function GithubIcon({ size = 16 }: { size?: number }) {
   return (
@@ -13,12 +13,29 @@ function GithubIcon({ size = 16 }: { size?: number }) {
   );
 }
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { siteApi } from '../services/siteApi';
 import type { Project } from '../types/site';
+
+/**
+ * 从后端 API 获取项目 README 内容
+ */
+async function fetchReadmeFromBackend(slug: string): Promise<string | null> {
+  try {
+    const response = await siteApi.getProjectReadme(slug);
+    return response.data?.data || null;
+  } catch {
+    return null;
+  }
+}
 
 export default function ProjectDetailPage() {
   const { slug } = useParams();
   const [project, setProject] = useState<Project | null>(null);
+  /* README 内容状态 */
+  const [readmeContent, setReadmeContent] = useState<string | null>(null);
+  const [readmeLoading, setReadmeLoading] = useState(false);
+  const [readmeError, setReadmeError] = useState(false);
 
   useEffect(() => {
     if (slug) {
@@ -27,6 +44,38 @@ export default function ProjectDetailPage() {
       }).catch(() => {});
     }
   }, [slug]);
+
+  /**
+   * 当项目数据加载后，从后端获取 README
+   */
+  const loadReadme = useCallback(async (project: Project) => {
+    if (!project.slug) return;
+
+    setReadmeLoading(true);
+    setReadmeError(false);
+
+    try {
+      const content = await fetchReadmeFromBackend(project.slug);
+      if (content) {
+        setReadmeContent(content);
+      } else {
+        setReadmeContent(project.description || 'No detailed description available.');
+        setReadmeError(true);
+      }
+    } catch {
+      setReadmeContent(project.description || 'Failed to load README.');
+      setReadmeError(true);
+    } finally {
+      setReadmeLoading(false);
+    }
+  }, []);
+
+  /* 当 project 变化时触发 README 加载 */
+  useEffect(() => {
+    if (project) {
+      loadReadme(project);
+    }
+  }, [project, loadReadme]);
 
   if (!project) return <div className="min-h-screen flex items-center justify-center text-sw-muted">Loading...</div>;
 
@@ -62,9 +111,11 @@ export default function ProjectDetailPage() {
           </div>
 
           <div className="flex gap-4 mb-8">
-            {project.demoUrl && (
-              <Link to={project.demoUrl}
-                className="px-6 py-2 bg-sw-accent text-white rounded-full hover:bg-sw-accent/90 transition-all duration-300 flex items-center gap-2 shadow-md shadow-sw-accent/20">
+            {(project.embeddedEnabled || project.demoUrl) && (
+              <Link
+                to={project.embeddedEnabled ? `/projects/${project.slug}/demo` : project.demoUrl}
+                className="px-6 py-2 bg-sw-accent text-white rounded-full hover:bg-sw-accent/90 transition-all duration-300 flex items-center gap-2 shadow-md shadow-sw-accent/20"
+              >
                 <ExternalLink size={16} /> Live Demo
               </Link>
             )}
@@ -76,9 +127,28 @@ export default function ProjectDetailPage() {
             )}
           </div>
 
-          {/* Markdown 内容用毛玻璃容器 */}
+          {/* README / Markdown 内容区域 */}
           <div className="p-8 bg-white/55 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm prose max-w-none">
-            <ReactMarkdown>{project.longDescription || project.description}</ReactMarkdown>
+            {/* 加载中状态 */}
+            {readmeLoading && (
+              <div className="flex items-center gap-3 text-sw-muted py-8">
+                <div className="w-5 h-5 border-2 border-sw-accent border-t-transparent rounded-full animate-spin" />
+                <span>Loading README from GitHub...</span>
+              </div>
+            )}
+
+            {/* GitHub 获取失败提示 */}
+            {readmeError && !readmeLoading && (
+              <div className="flex items-center gap-2 text-amber-600 text-sm mb-6 p-3 bg-amber-50/50 rounded-lg border border-amber-200/30">
+                <AlertCircle size={16} />
+                <span>Could not load README from GitHub. Showing basic description instead.</span>
+              </div>
+            )}
+
+            {/* Markdown 渲染 */}
+            {!readmeLoading && readmeContent && (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{readmeContent.replace(/\\n/g, '\n')}</ReactMarkdown>
+            )}
           </div>
         </motion.div>
       </div>

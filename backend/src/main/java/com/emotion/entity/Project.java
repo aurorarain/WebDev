@@ -54,6 +54,28 @@ public class Project {
     @Column(name = "sort_order")
     private Integer sortOrder = 0;
 
+    // 嵌入式部署相关字段
+    @Column(name = "embedded_enabled")
+    private Boolean embeddedEnabled = false;
+
+    @Column(name = "github_repo_url", length = 500)
+    private String githubRepoUrl;
+
+    @Column(name = "project_path", length = 500)
+    private String projectPath;
+
+    @Column(name = "backend_port")
+    private Integer backendPort;
+
+    @Column(name = "backend_start_cmd", length = 500)
+    private String backendStartCmd;
+
+    @Column(name = "health_check_url", length = 500)
+    private String healthCheckUrl;
+
+    @Column(name = "frontend_build_dir", length = 500)
+    private String frontendBuildDir;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

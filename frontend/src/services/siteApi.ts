@@ -19,6 +19,8 @@ export const siteApi = {
   getProjects: () => api.get('/projects'),
   /* 获取单个项目详情（公开） */
   getProject: (slug: string) => api.get(`/projects/${slug}`),
+  /* 获取项目 README（公开） */
+  getProjectReadme: (slug: string) => api.get(`/projects/${slug}/readme`),
 
   /* === 管理员项目操作 === */
   /* 创建项目 */
@@ -30,4 +32,15 @@ export const siteApi = {
   /* 删除项目 */
   deleteProject: (id: number) =>
     api.delete(`/projects/${id}`, { headers: getAuthHeaders() }),
+
+  /* === 动态部署 === */
+  /* 启动嵌入项目 */
+  startProject: (id: number) => api.post(`/projects/${id}/start`),
+  /* 停止嵌入项目 */
+  stopProject: (id: number) => api.post(`/projects/${id}/stop`),
+  /* 获取项目运行状态 */
+  getProjectStatus: (id: number) => api.get(`/projects/${id}/status`),
+  /* 从 GitHub 拉取项目（管理员） */
+  cloneProject: (id: number, githubUrl: string) =>
+    api.post(`/projects/${id}/clone`, { githubUrl }, { headers: getAuthHeaders() }),
 };

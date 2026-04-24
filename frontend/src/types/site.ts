@@ -43,6 +43,13 @@ export interface Project {
   category: string;
   featured: boolean;
   sortOrder: number;
+  embeddedEnabled: boolean;
+  githubRepoUrl: string;
+  projectPath: string;
+  backendPort: number;
+  backendStartCmd: string;
+  healthCheckUrl: string;
+  frontendBuildDir: string;
   createdAt: string;
   updatedAt: string;
 }

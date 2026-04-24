@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Sparkles, Code2, Brain, Globe, PenTool, MessageCircle, ChevronDown } from 'lucide-react';
 import ParticlesBackground from '../components/effects/ParticleBackground';
+import TiltCard from '../components/ui/TiltCard';
 import { siteApi } from '../services/siteApi';
 import { blogApi } from '../services/blogApi';
 import type { Project, BlogPost } from '../types/site';
@@ -183,11 +184,13 @@ export default function HomePage() {
           >
             {techHighlights.map(item => (
               <motion.div key={item.title} variants={fadeUp}>
+                <TiltCard>
                 <GlassCard gradient="from-purple-500 to-indigo-500">
                   <div className="text-sw-accent mb-4 group-hover:scale-110 transition-transform duration-300 origin-left">{item.icon}</div>
                   <h3 className="font-display text-lg font-semibold mb-2 group-hover:text-sw-accent transition-colors duration-300">{item.title}</h3>
                   <p className="text-sw-muted text-sm leading-relaxed">{item.desc}</p>
                 </GlassCard>
+                </TiltCard>
               </motion.div>
             ))}
           </motion.div>
@@ -247,6 +250,7 @@ export default function HomePage() {
             >
               {featuredProjects.map((project) => (
                 <motion.div key={project.id} variants={fadeUp}>
+                  <TiltCard>
                   <Link to={`/projects/${project.slug}`} className="block h-full">
                     <GlassCard gradient="from-pink-500 to-rose-400" className="h-full">
                       <h3 className="font-display text-lg font-semibold mb-2 group-hover:text-sw-accent transition-colors duration-300">
@@ -262,6 +266,7 @@ export default function HomePage() {
                       </div>
                     </GlassCard>
                   </Link>
+                  </TiltCard>
                 </motion.div>
               ))}
             </motion.div>
@@ -296,6 +301,7 @@ export default function HomePage() {
             >
               {recentPosts.map((post) => (
                 <motion.div key={post.id} variants={fadeUp}>
+                  <TiltCard>
                   <Link to={`/blog/${post.slug}`} className="block h-full">
                     <GlassCard gradient="from-blue-500 to-indigo-400" className="h-full">
                       <p className="text-sw-muted text-xs mb-3">
@@ -305,6 +311,7 @@ export default function HomePage() {
                       <p className="text-sw-muted text-sm line-clamp-2">{post.excerpt}</p>
                     </GlassCard>
                   </Link>
+                  </TiltCard>
                 </motion.div>
               ))}
             </motion.div>

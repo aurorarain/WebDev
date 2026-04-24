@@ -20,9 +20,15 @@ spring:
   sql:
     init:
       mode: always
+      encoding: UTF-8
 
 server:
   port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 jwt:
   secret: ${JWT_SECRET:singularitywalk-secret-key-2024-change-in-production}
@@ -30,6 +36,7 @@ jwt:
 
 file:
   upload-dir: /var/www/singularitywalk/uploads
+  embedded-projects-dir: /var/www/singularitywalk/embedded-projects
 
 model:
   path: /var/www/singularitywalk/models/emotion_model.onnx

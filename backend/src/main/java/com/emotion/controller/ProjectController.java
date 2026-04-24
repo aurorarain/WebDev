@@ -40,6 +40,19 @@ public class ProjectController {
     }
 
     /**
+     * 获取项目 README（公开） — 优先用 longDescription，否则从 GitHub 拉取
+     */
+    @GetMapping("/{slug}/readme")
+    public ResponseEntity<ApiResponse<String>> getProjectReadme(@PathVariable String slug) {
+        return projectService.getBySlug(slug)
+                .map(project -> {
+                    String content = projectService.getReadmeContent(project);
+                    return ResponseEntity.ok(ApiResponse.success(content));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
      * 创建项目（管理员）
      */
     @PostMapping

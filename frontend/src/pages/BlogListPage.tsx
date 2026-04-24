@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { blogApi } from '../services/blogApi';
+import TiltCard from '../components/ui/TiltCard';
 import type { BlogPost } from '../types/site';
 
 export default function BlogListPage() {
@@ -44,6 +45,7 @@ export default function BlogListPage() {
               transition={{ duration: 0.6, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true, amount: 0.1 }}
             >
+              <TiltCard>
               <Link to={`/blog/${post.slug}`} className="block">
                 <div className="relative overflow-hidden rounded-2xl bg-white/55 backdrop-blur-xl border border-white/50 shadow-sm hover:shadow-xl hover:bg-white/70 transition-all duration-500 group">
                   <div className="h-1 w-full bg-gradient-to-r from-amber-500 to-orange-400" />
@@ -63,6 +65,7 @@ export default function BlogListPage() {
                   </div>
                 </div>
               </Link>
+              </TiltCard>
             </motion.div>
           ))}
         </div>

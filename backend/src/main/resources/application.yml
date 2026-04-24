@@ -30,14 +30,27 @@ spring:
   sql:
     init:
       mode: always
+      encoding: UTF-8
 
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
 
+  # 强制 HTTP 请求/响应使用 UTF-8 编码
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
 server:
   port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 model:
   path: classpath:models/emotion_model.onnx
@@ -48,3 +61,4 @@ jwt:
 
 file:
   upload-dir: ./uploads
+  embedded-projects-dir: ./embedded-projects

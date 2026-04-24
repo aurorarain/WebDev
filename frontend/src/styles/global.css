@@ -61,3 +61,71 @@ html, body {
 .glow-text {
   text-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
 }
+
+/* Markdown 内容样式 */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.9em;
+}
+.prose th,
+.prose td {
+  border: 1px solid #d1d5db;
+  padding: 8px 12px;
+  text-align: left;
+}
+.prose th {
+  background: #f3f4f6;
+  font-weight: 600;
+}
+.prose tr:nth-child(even) {
+  background: #f9fafb;
+}
+.prose code {
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+.prose pre {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 1em;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+.prose pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+.prose blockquote {
+  border-left: 3px solid #6366f1;
+  padding-left: 1em;
+  color: #6b7280;
+  margin: 1em 0;
+}
+.prose img {
+  border-radius: 8px;
+  max-width: 100%;
+}
+.prose hr {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 1.5em 0;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+.prose li {
+  margin: 0.25em 0;
+}
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}

@@ -5,6 +5,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ArrowLeft, Save } from 'lucide-react';
 import { siteApi } from '../../services/siteApi';
 import { Project } from '../../types/site';
@@ -27,6 +28,17 @@ export default function AdminProjectEditor() {
   const [featured, setFeatured] = useState(false);
   const [sortOrder, setSortOrder] = useState(0);
 
+  /* 嵌入式部署相关状态 */
+  const [embeddedEnabled, setEmbeddedEnabled] = useState(false);
+  const [githubRepoUrl, setGithubRepoUrl] = useState('');
+  const [projectPath, setProjectPath] = useState('');
+  const [backendPort, setBackendPort] = useState<number>(8081);
+  const [backendStartCmd, setBackendStartCmd] = useState('');
+  const [healthCheckUrl, setHealthCheckUrl] = useState('');
+  const [frontendBuildDir, setFrontendBuildDir] = useState('');
+  const [cloneStatus, setCloneStatus] = useState<'idle' | 'cloning' | 'building' | 'success' | 'error'>('idle');
+  const [cloneMessage, setCloneMessage] = useState('');
+
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -39,7 +51,8 @@ export default function AdminProjectEditor() {
       setLoading(true);
       try {
         const response = await siteApi.getProjects();
-        const projects = response.data as Project[];
+        /* 后端返回 ApiResponse<List<Project>>，需要逐层解包 */
+        const projects = (response.data?.data || []) as Project[];
         const project = projects.find((p) => p.id === Number(id));
         if (project) {
           setTitle(project.title);
@@ -53,6 +66,14 @@ export default function AdminProjectEditor() {
           setCategory(project.category || '');
           setFeatured(project.featured);
           setSortOrder(project.sortOrder);
+          /* 加载嵌入式部署字段 */
+          setEmbeddedEnabled(project.embeddedEnabled || false);
+          setGithubRepoUrl(project.githubRepoUrl || '');
+          setProjectPath(project.projectPath || '');
+          setBackendPort(project.backendPort || 8081);
+          setBackendStartCmd(project.backendStartCmd || '');
+          setHealthCheckUrl(project.healthCheckUrl || '');
+          setFrontendBuildDir(project.frontendBuildDir || '');
         } else {
           setError('Project not found');
         }
@@ -103,6 +124,13 @@ export default function AdminProjectEditor() {
       category: category.trim(),
       featured,
       sortOrder,
+      embeddedEnabled,
+      githubRepoUrl,
+      projectPath,
+      backendPort,
+      backendStartCmd,
+      healthCheckUrl,
+      frontendBuildDir,
     };
 
     try {
@@ -121,6 +149,32 @@ export default function AdminProjectEditor() {
 
   /* Markdown 实时预览 */
   const markdownPreview = useMemo(() => longDescription, [longDescription]);
+
+  /* 从 GitHub 拉取项目并构建 */
+  const handleClone = async () => {
+    if (!githubRepoUrl.trim() || !id) return;
+    setCloneStatus('cloning');
+    setCloneMessage('正在从 GitHub 拉取项目...');
+    try {
+      const res = await siteApi.cloneProject(Number(id), githubRepoUrl.trim());
+      const result = res.data?.data;
+      if (result?.success) {
+        setCloneStatus('success');
+        setCloneMessage('项目拉取和构建成功！');
+        if (result.projectPath) setProjectPath(result.projectPath);
+        if (result.frontendBuildDir) setFrontendBuildDir(result.frontendBuildDir);
+        if (result.suggestedStartCmd) setBackendStartCmd(result.suggestedStartCmd);
+        if (result.suggestedPort) setBackendPort(result.suggestedPort);
+        if (result.suggestedPort) setHealthCheckUrl(`http://localhost:${result.suggestedPort}/api/health`);
+      } else {
+        setCloneStatus('error');
+        setCloneMessage(result?.message || '拉取失败');
+      }
+    } catch {
+      setCloneStatus('error');
+      setCloneMessage('无法连接到服务器');
+    }
+  };
 
   /* 加载中 */
   if (loading) {
@@ -301,6 +355,111 @@ export default function AdminProjectEditor() {
               placeholder="Detailed project description in Markdown..."
             />
           </div>
+
+          {/* 嵌入式部署设置 */}
+          <div className="bg-sw-surface rounded-xl border border-sw-border p-5 space-y-4">
+            <div className="flex items-center gap-3">
+              <h3 className="text-sm font-medium text-sw-text">动态部署设置</h3>
+              <label className="flex items-center gap-2 cursor-pointer ml-auto">
+                <input
+                  type="checkbox"
+                  checked={embeddedEnabled}
+                  onChange={(e) => setEmbeddedEnabled(e.target.checked)}
+                  className="w-4 h-4 rounded border-sw-border bg-sw-surface-2 text-sw-accent focus:ring-sw-accent/30"
+                />
+                <span className="text-sm text-sw-muted">启用动态部署</span>
+              </label>
+            </div>
+
+            {embeddedEnabled && (
+              <div className="space-y-3 pt-2 border-t border-sw-border">
+                {/* GitHub URL + Clone */}
+                <div>
+                  <label className="block text-sm font-medium text-sw-muted mb-1.5">GitHub 仓库地址</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={githubRepoUrl}
+                      onChange={(e) => setGithubRepoUrl(e.target.value)}
+                      className="flex-1 px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
+                      placeholder="https://github.com/user/repo"
+                    />
+                    <button
+                      onClick={handleClone}
+                      disabled={!githubRepoUrl.trim() || !id || cloneStatus === 'cloning'}
+                      className="px-4 py-2 bg-sw-accent text-white rounded-lg text-sm hover:bg-sw-accent/90 disabled:opacity-50 transition-colors whitespace-nowrap"
+                    >
+                      {cloneStatus === 'cloning' ? '拉取中...' : '拉取项目'}
+                    </button>
+                  </div>
+                  {cloneMessage && (
+                    <p className={`text-xs mt-1 ${cloneStatus === 'error' ? 'text-red-500' : cloneStatus === 'success' ? 'text-green-500' : 'text-sw-muted'}`}>
+                      {cloneMessage}
+                    </p>
+                  )}
+                </div>
+
+                {/* 项目路径 */}
+                <div>
+                  <label className="block text-sm font-medium text-sw-muted mb-1.5">项目路径</label>
+                  <input
+                    type="text"
+                    value={projectPath}
+                    onChange={(e) => setProjectPath(e.target.value)}
+                    className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
+                    placeholder="自动填充"
+                  />
+                </div>
+
+                {/* 后端端口 + 健康检查 URL */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-sw-muted mb-1.5">后端端口</label>
+                    <input
+                      type="number"
+                      value={backendPort}
+                      onChange={(e) => setBackendPort(Number(e.target.value))}
+                      className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-sw-muted mb-1.5">健康检查 URL</label>
+                    <input
+                      type="text"
+                      value={healthCheckUrl}
+                      onChange={(e) => setHealthCheckUrl(e.target.value)}
+                      className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
+                      placeholder="http://localhost:8081/api/health"
+                    />
+                  </div>
+                </div>
+
+                {/* 后端启动命令 */}
+                <div>
+                  <label className="block text-sm font-medium text-sw-muted mb-1.5">后端启动命令</label>
+                  <input
+                    type="text"
+                    value={backendStartCmd}
+                    onChange={(e) => setBackendStartCmd(e.target.value)}
+                    className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm font-mono placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
+                    placeholder="java -jar backend.jar --server.port=8081"
+                  />
+                </div>
+
+                {/* 前端构建目录 */}
+                <div>
+                  <label className="block text-sm font-medium text-sw-muted mb-1.5">前端构建目录</label>
+                  <input
+                    type="text"
+                    value={frontendBuildDir}
+                    onChange={(e) => setFrontendBuildDir(e.target.value)}
+                    className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
+                    placeholder="自动填充"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* 右侧：Markdown 预览 */}
@@ -308,7 +467,7 @@ export default function AdminProjectEditor() {
           <h3 className="text-sm font-medium text-sw-muted mb-3">Preview</h3>
           <div className="prose prose-sm max-w-none text-sw-text">
             {markdownPreview ? (
-              <ReactMarkdown>{markdownPreview}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdownPreview}</ReactMarkdown>
             ) : (
               <p className="text-sw-muted italic">Start writing to see a preview...</p>
             )}

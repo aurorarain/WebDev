@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { ApiResponse, PredictResponse, RealtimeFaceResponse } from '../types/emotion';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+/* 使用相对路径，让 Nginx 反向代理统一处理 API 转发 */
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -10,7 +11,7 @@ const api = axios.create({
   },
 });
 
-// 请求拦截器：添加JWT token
+/* 请求拦截器：添加JWT token */
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -24,14 +25,19 @@ api.interceptors.request.use(
   }
 );
 
-// 响应拦截器：处理token过期
+/* 响应拦截器：仅对需要认证的管理接口跳转，公开 API 不触发跳转 */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+    if (error.response?.status === 401 && localStorage.getItem('token')) {
+      const url = error.config?.url || '';
+      const publicEndpoints = ['/predict', '/health', '/projects', '/blog', '/guestbook', '/site'];
+      const isPublicApi = publicEndpoints.some(ep => url.includes(ep));
+      if (!isPublicApi) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

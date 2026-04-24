@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ExternalLink } from 'lucide-react';
+import TiltCard from '../components/ui/TiltCard';
 import { siteApi } from '../services/siteApi';
 import type { Project } from '../types/site';
 
@@ -68,6 +69,7 @@ export default function ProjectsPage() {
               transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true, amount: 0.1 }}
             >
+              <TiltCard>
               <div className="relative overflow-hidden rounded-2xl bg-white/55 backdrop-blur-xl border border-white/50 shadow-sm hover:shadow-xl hover:bg-white/70 transition-all duration-500 group h-full flex flex-col">
                 <div className="h-1 w-full bg-gradient-to-r from-teal-500 to-cyan-400" />
                 <div className="p-6 flex flex-col flex-1">
@@ -93,6 +95,7 @@ export default function ProjectsPage() {
                   </div>
                 </div>
               </div>
+              </TiltCard>
             </motion.div>
           ))}
         </div>
