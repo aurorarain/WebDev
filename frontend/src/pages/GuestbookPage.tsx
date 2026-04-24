@@ -33,9 +33,9 @@ export default function GuestbookPage() {
   return (
     /* 淡玫瑰渐变整页背景 */
     <div className="min-h-screen relative" style={{ background: 'linear-gradient(170deg, #fff1f2 0%, #fecdd3 35%, #fdf2f8 70%, #ffffff 100%)' }}>
-      <div className="fixed top-[10%] left-[-5%] w-[350px] h-[350px] bg-rose-200/15 rounded-full blur-[90px] pointer-events-none" />
-      <div className="fixed bottom-[15%] right-[-5%] w-[300px] h-[300px] bg-pink-200/15 rounded-full blur-[80px] pointer-events-none" />
-      <div className="fixed top-[50%] left-[30%] w-[200px] h-[200px] bg-fuchsia-200/10 rounded-full blur-[70px] pointer-events-none" />
+      {/* 光斑装饰 — 精简至2个，缩小尺寸与模糊半径 */}
+      <div className="fixed top-[10%] left-[-5%] w-[260px] h-[260px] bg-rose-200/10 rounded-full blur-[50px] pointer-events-none" />
+      <div className="fixed bottom-[15%] right-[-5%] w-[220px] h-[220px] bg-pink-200/10 rounded-full blur-[45px] pointer-events-none" />
 
       <div className="max-w-3xl mx-auto px-4 py-20 relative z-10">
         <motion.div
@@ -53,7 +53,7 @@ export default function GuestbookPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative overflow-hidden rounded-2xl bg-white/55 backdrop-blur-xl border border-white/50 shadow-sm mb-12"
+          className="relative overflow-hidden rounded-2xl bg-white/55 backdrop-blur-md border border-white/50 shadow-sm mb-12"
         >
           <div className="h-1 w-full bg-gradient-to-r from-rose-500 to-pink-400" />
           <div className="p-6">
@@ -94,7 +94,7 @@ export default function GuestbookPage() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.05 }}
               viewport={{ once: true }}
-              className="p-5 bg-white/55 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm hover:shadow-md transition-all duration-300"
+              className="p-5 bg-white/55 backdrop-blur-md rounded-2xl border border-white/50 shadow-sm hover:shadow-md transition-all duration-300"
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium text-sm">{msg.name}</span>

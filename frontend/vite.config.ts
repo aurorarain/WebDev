@@ -15,12 +15,30 @@ export default defineConfig({
   build: {
     rollupOptions: {
       onwarn(warning, warn) {
-        // 忽略TypeScript警告
-        if (warning.code === 'TS') {
-          return;
-        }
+        if (warning.code === 'TS') return;
         warn(warning);
       },
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-motion': ['framer-motion'],
+          'vendor-charts': ['recharts'],
+          'vendor-markdown': ['react-markdown', 'remark-gfm'],
+          'vendor-webcam': ['react-webcam'],
+        },
+      },
     },
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info'],
+      },
+    },
+    cssCodeSplit: true,
+    sourcemap: false,
+    target: 'es2020',
+    chunkSizeWarningLimit: 200,
   },
 });

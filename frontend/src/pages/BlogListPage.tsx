@@ -22,9 +22,9 @@ export default function BlogListPage() {
   return (
     /* 淡琥珀渐变整页背景 */
     <div className="min-h-screen relative" style={{ background: 'linear-gradient(170deg, #fffbeb 0%, #fef3c7 35%, #fff7ed 70%, #ffffff 100%)' }}>
-      <div className="fixed top-[5%] right-[-5%] w-[350px] h-[350px] bg-amber-200/15 rounded-full blur-[90px] pointer-events-none" />
-      <div className="fixed bottom-[10%] left-[-5%] w-[300px] h-[300px] bg-orange-200/10 rounded-full blur-[80px] pointer-events-none" />
-      <div className="fixed top-[40%] left-[20%] w-[250px] h-[250px] bg-yellow-200/10 rounded-full blur-[70px] pointer-events-none" />
+      {/* 光斑装饰 — 精简至2个，缩小尺寸与模糊半径 */}
+      <div className="fixed top-[5%] right-[-5%] w-[260px] h-[260px] bg-amber-200/10 rounded-full blur-[50px] pointer-events-none" />
+      <div className="fixed bottom-[10%] left-[-5%] w-[220px] h-[220px] bg-orange-200/8 rounded-full blur-[45px] pointer-events-none" />
 
       <div className="max-w-5xl mx-auto px-4 py-20 relative z-10">
         <motion.div
@@ -47,7 +47,7 @@ export default function BlogListPage() {
             >
               <TiltCard>
               <Link to={`/blog/${post.slug}`} className="block">
-                <div className="relative overflow-hidden rounded-2xl bg-white/55 backdrop-blur-xl border border-white/50 shadow-sm hover:shadow-xl hover:bg-white/70 transition-all duration-500 group">
+                <div className="relative overflow-hidden rounded-2xl bg-white/55 backdrop-blur-md border border-white/50 shadow-sm hover:shadow-xl hover:bg-white/70 transition-all duration-300 group">
                   <div className="h-1 w-full bg-gradient-to-r from-amber-500 to-orange-400" />
                   <div className="p-6">
                     <p className="text-sw-muted text-xs mb-2">

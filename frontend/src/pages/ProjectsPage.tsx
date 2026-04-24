@@ -23,9 +23,9 @@ export default function ProjectsPage() {
   return (
     /* 淡青蓝渐变整页背景 */
     <div className="min-h-screen relative" style={{ background: 'linear-gradient(170deg, #f0fdfa 0%, #ccfbf1 35%, #f0f9ff 70%, #ffffff 100%)' }}>
-      <div className="fixed top-[5%] left-[10%] w-[400px] h-[400px] bg-teal-200/15 rounded-full blur-[100px] pointer-events-none" />
-      <div className="fixed top-[5%] right-[10%] w-[350px] h-[350px] bg-cyan-200/15 rounded-full blur-[90px] pointer-events-none" />
-      <div className="fixed bottom-[10%] left-[30%] w-[250px] h-[250px] bg-sky-200/10 rounded-full blur-[80px] pointer-events-none" />
+      {/* 光斑装饰 — 精简至2个，缩小尺寸与模糊半径 */}
+      <div className="fixed top-[5%] left-[10%] w-[300px] h-[300px] bg-teal-200/10 rounded-full blur-[50px] pointer-events-none" />
+      <div className="fixed top-[5%] right-[10%] w-[260px] h-[260px] bg-cyan-200/10 rounded-full blur-[45px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 py-20 relative z-10">
         <motion.div
@@ -70,7 +70,7 @@ export default function ProjectsPage() {
               viewport={{ once: true, amount: 0.1 }}
             >
               <TiltCard>
-              <div className="relative overflow-hidden rounded-2xl bg-white/55 backdrop-blur-xl border border-white/50 shadow-sm hover:shadow-xl hover:bg-white/70 transition-all duration-500 group h-full flex flex-col">
+              <div className="relative overflow-hidden rounded-2xl bg-white/55 backdrop-blur-md border border-white/50 shadow-sm hover:shadow-xl hover:bg-white/70 transition-all duration-300 group h-full flex flex-col">
                 <div className="h-1 w-full bg-gradient-to-r from-teal-500 to-cyan-400" />
                 {/* 缩略图 */}
                 {project.thumbnailUrl ? (
@@ -78,7 +78,7 @@ export default function ProjectsPage() {
                     <img
                       src={project.thumbnailUrl}
                       alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                     />
                   </div>

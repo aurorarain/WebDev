@@ -25,6 +25,11 @@ export default {
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       /* 自定义动画 */
+      boxShadow: {
+        'glass': '0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)',
+        'glass-hover': '0 10px 30px rgba(0,0,0,0.06), 0 1px 8px rgba(0,0,0,0.04)',
+        'elevated': '0 20px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)',
+      },
       animation: {
         'glow-pulse': 'glowPulse 3s ease-in-out infinite',
         'float': 'float 6s ease-in-out infinite',

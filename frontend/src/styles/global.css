@@ -54,6 +54,16 @@ html, body {
   color: #ffffff;
 }
 
+/* 键盘焦点指示器 */
+*:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
 /* 发光效果工具类 — 亮色主题下使用更柔和的紫色光晕 */
 .glow {
   box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);

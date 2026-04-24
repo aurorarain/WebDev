@@ -1,10 +1,10 @@
 /* 首页 — 丝滑板块过渡 + 交替渐变背景 + 毛玻璃卡片 */
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Sparkles, Code2, Brain, Globe, PenTool, MessageCircle, ChevronDown } from 'lucide-react';
-import ParticlesBackground from '../components/effects/ParticleBackground';
 import TiltCard from '../components/ui/TiltCard';
+const ParticleBackground = lazy(() => import('../components/effects/ParticleBackground'));
 import { siteApi } from '../services/siteApi';
 import { blogApi } from '../services/blogApi';
 import type { Project, BlogPost } from '../types/site';
@@ -83,7 +83,7 @@ function GlassCard({
   className?: string;
 }) {
   return (
-    <div className={`relative overflow-hidden rounded-2xl bg-white/55 backdrop-blur-xl border border-white/50 shadow-sm hover:shadow-xl hover:bg-white/70 transition-all duration-500 group ${className}`}>
+    <div className={`relative overflow-hidden rounded-2xl bg-white/55 backdrop-blur-md border border-white/50 shadow-sm hover:shadow-xl hover:bg-white/70 transition-all duration-300 group ${className}`}>
       <div className={`h-1 w-full bg-gradient-to-r ${gradient}`} />
       <div className="p-6">{children}</div>
     </div>
@@ -115,10 +115,11 @@ export default function HomePage() {
 
       {/* ====== Hero — 白色 + 粒子 + 光斑 ====== */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-purple-400/20 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-purple-300/20 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute top-[40%] left-[30%] w-[300px] h-[300px] bg-indigo-300/10 rounded-full blur-[80px] pointer-events-none" />
-        <ParticlesBackground />
+        <div className="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-purple-400/15 rounded-full blur-[50px] pointer-events-none" />
+        <div className="absolute bottom-[-5%] left-[-5%] w-[300px] h-[300px] bg-purple-300/15 rounded-full blur-[40px] pointer-events-none" />
+        <Suspense fallback={null}>
+          <ParticleBackground />
+        </Suspense>
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: 40, scale: 0.95 }}
@@ -174,8 +175,8 @@ export default function HomePage() {
 
       {/* ====== About — 极淡薰衣草 ====== */}
       <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #faf8ff 0%, #f5f0ff 40%, #fdfbff 100%)' }}>
-        <div className="absolute top-0 right-[-10%] w-[400px] h-[400px] bg-purple-100/15 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 left-[-5%] w-[300px] h-[300px] bg-violet-100/10 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-0 right-[-10%] w-[350px] h-[350px] bg-purple-100/12 rounded-full blur-[50px] pointer-events-none" />
+        <div className="absolute bottom-0 left-[-5%] w-[250px] h-[250px] bg-violet-100/8 rounded-full blur-[40px] pointer-events-none" />
         <div className="relative z-10">
           <SectionTitle title="About This Site" subtitle="A personal space for AI experiments, open-source projects, and technical explorations." />
           <motion.div
@@ -216,7 +217,7 @@ export default function HomePage() {
 
       {/* ====== Tech Stack — 白色 ====== */}
       <section className="relative py-28 px-4 overflow-hidden bg-white">
-        <div className="absolute bottom-0 left-[-5%] w-[300px] h-[300px] bg-blue-100/10 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute bottom-0 left-[-5%] w-[250px] h-[250px] bg-blue-100/8 rounded-full blur-[40px] pointer-events-none" />
         <div className="relative z-10">
           <SectionTitle title="Tech Stack" subtitle="Tools and frameworks powering these experiments." />
           <motion.div
@@ -245,8 +246,8 @@ export default function HomePage() {
 
       {/* ====== Featured Projects — 极淡玫瑰 ====== */}
       <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #fefafc 0%, #fdf0f5 40%, #fff8fa 100%)' }}>
-        <div className="absolute top-0 left-[-5%] w-[350px] h-[350px] bg-pink-100/10 rounded-full blur-[90px] pointer-events-none" />
-        <div className="absolute bottom-0 right-[-5%] w-[300px] h-[300px] bg-rose-100/8 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-0 left-[-5%] w-[300px] h-[300px] bg-pink-100/8 rounded-full blur-[45px] pointer-events-none" />
+        <div className="absolute bottom-0 right-[-5%] w-[250px] h-[250px] bg-rose-100/6 rounded-full blur-[40px] pointer-events-none" />
         <div className="relative z-10">
           <SectionTitle title="Featured Projects" subtitle="Handpicked works that showcase practical AI and web engineering." />
           {featuredProjects.length > 0 ? (
@@ -314,8 +315,8 @@ export default function HomePage() {
 
       {/* ====== Latest Experiments — 极淡蓝 ====== */}
       <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #f8f9ff 0%, #f2f4ff 40%, #fafaff 100%)' }}>
-        <div className="absolute top-[-10%] left-[20%] w-[350px] h-[350px] bg-indigo-100/8 rounded-full blur-[90px] pointer-events-none" />
-        <div className="absolute bottom-0 right-[-10%] w-[300px] h-[300px] bg-blue-100/8 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-[-10%] left-[20%] w-[300px] h-[300px] bg-indigo-100/6 rounded-full blur-[45px] pointer-events-none" />
+        <div className="absolute bottom-0 right-[-10%] w-[250px] h-[250px] bg-blue-100/6 rounded-full blur-[40px] pointer-events-none" />
         <div className="relative z-10">
           <SectionTitle title="Latest Experiments" subtitle="Notes, insights, and lessons from the workbench." />
           {recentPosts.length > 0 ? (
@@ -377,8 +378,8 @@ export default function HomePage() {
 
       {/* ====== CTA — 极淡粉紫 → 白 ====== */}
       <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #fdf9ff 0%, #fef6fb 40%, #ffffff 100%)' }}>
-        <div className="absolute -top-20 right-[-5%] w-[400px] h-[400px] bg-purple-100/8 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute -bottom-20 left-[-5%] w-[350px] h-[350px] bg-pink-100/8 rounded-full blur-[90px] pointer-events-none" />
+        <div className="absolute -top-20 right-[-5%] w-[300px] h-[300px] bg-purple-100/6 rounded-full blur-[50px] pointer-events-none" />
+        <div className="absolute -bottom-20 left-[-5%] w-[300px] h-[300px] bg-pink-100/6 rounded-full blur-[45px] pointer-events-none" />
         <div className="relative z-10">
           <motion.div
             variants={sectionReveal}
@@ -387,9 +388,7 @@ export default function HomePage() {
             viewport={{ once: true, amount: 0.2 }}
             className="max-w-3xl mx-auto text-center"
           >
-            <div className="p-12 bg-white/65 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl relative overflow-hidden">
-              <div className="absolute -top-20 -right-20 w-72 h-72 bg-purple-100/10 rounded-full blur-[80px] pointer-events-none" />
-              <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-pink-100/8 rounded-full blur-[80px] pointer-events-none" />
+            <div className="p-12 bg-white/70 backdrop-blur-md rounded-3xl border border-white/50 shadow-xl relative overflow-hidden">
               <div className="relative z-10">
                 <MessageCircle size={40} className="mx-auto mb-6 text-sw-accent" />
                 <h2 className="font-display text-3xl font-bold mb-4">Get in Touch</h2>

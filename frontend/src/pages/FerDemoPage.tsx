@@ -2,11 +2,11 @@
  * FER 演示页面
  * 提供图片上传和实时摄像头两种情绪识别模式
  */
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { Upload, Camera, ArrowLeft, Cpu } from 'lucide-react';
 import ImageUploader from '../components/image/ImageUploader';
-import WebcamCapture from '../components/webcam/WebcamCapture';
+const WebcamCapture = lazy(() => import('../components/webcam/WebcamCapture'));
 import { emotionApi } from '../services/emotionApi';
 import { FaceResult } from '../types/emotion';
 
@@ -152,10 +152,12 @@ export default function FerDemoPage() {
                   {capturing ? 'Stop' : 'Start'}
                 </button>
               </div>
-              <WebcamCapture
-                onCapture={handleWebcamCapture}
-                isCapturing={capturing}
-              />
+              <Suspense fallback={<div className="text-center py-8 text-sw-muted">Loading camera...</div>}>
+                <WebcamCapture
+                  onCapture={handleWebcamCapture}
+                  isCapturing={capturing}
+                />
+              </Suspense>
             </div>
           )}
 

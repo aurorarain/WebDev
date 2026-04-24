@@ -77,10 +77,10 @@ export default function LoginModal() {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="relative w-full max-w-md"
           >
-            <div className="bg-white/90 backdrop-blur-2xl rounded-3xl border border-white/60 p-8 shadow-2xl relative overflow-hidden">
-              {/* 光斑装饰 */}
-              <div className="absolute -top-16 -right-16 w-64 h-64 bg-purple-300/20 rounded-full blur-[80px] pointer-events-none" />
-              <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-pink-200/15 rounded-full blur-[80px] pointer-events-none" />
+            <div className="bg-white/90 backdrop-blur-xl rounded-3xl border border-white/60 p-8 shadow-2xl relative overflow-hidden">
+              {/* 光斑装饰 — 缩小尺寸与模糊半径 */}
+              <div className="absolute -top-16 -right-16 w-48 h-48 bg-purple-300/15 rounded-full blur-[50px] pointer-events-none" />
+              <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-pink-200/10 rounded-full blur-[45px] pointer-events-none" />
 
               {/* 关闭按钮 */}
               <button

@@ -49,8 +49,9 @@ export default function BlogPostPage() {
         />
       </div>
 
-      <div className="fixed top-[10%] right-[-5%] w-[300px] h-[300px] bg-amber-200/15 rounded-full blur-[90px] pointer-events-none" />
-      <div className="fixed bottom-[10%] left-[-5%] w-[250px] h-[250px] bg-orange-200/10 rounded-full blur-[80px] pointer-events-none" />
+      {/* 光斑装饰 — 缩小尺寸与模糊半径 */}
+      <div className="fixed top-[10%] right-[-5%] w-[220px] h-[220px] bg-amber-200/10 rounded-full blur-[50px] pointer-events-none" />
+      <div className="fixed bottom-[10%] left-[-5%] w-[190px] h-[190px] bg-orange-200/8 rounded-full blur-[45px] pointer-events-none" />
 
       <div className="max-w-3xl mx-auto px-4 py-20 relative z-10" ref={articleRef}>
         <motion.div
@@ -81,7 +82,7 @@ export default function BlogPostPage() {
             </div>
           )}
 
-          <div className="p-8 bg-white/55 backdrop-blur-xl rounded-2xl border border-white/50 shadow-sm prose max-w-none">
+          <div className="p-8 bg-white/55 backdrop-blur-md rounded-2xl border border-white/50 shadow-sm prose max-w-none">
             <ReactMarkdown>{post.content || ''}</ReactMarkdown>
           </div>
         </motion.article>
