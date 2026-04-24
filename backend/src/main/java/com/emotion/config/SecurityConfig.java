@@ -61,6 +61,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/api/predict").permitAll()
                 .requestMatchers("/api/predict-realtime").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/embedded/**").permitAll()
                 .anyRequest().authenticated()
             );

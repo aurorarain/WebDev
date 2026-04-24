@@ -27,13 +27,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Value("${file.embedded-projects-dir:./embedded-projects}")
     private String embeddedProjectsDir;
 
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
     /**
      * 配置静态资源处理：/embedded/{slug}/** 映射到嵌入式项目的前端构建目录
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 嵌入式项目静态文件
         registry.addResourceHandler("/embedded/**")
                 .addResourceLocations("file:" + embeddedProjectsDir + "/");
+        // 上传的图片文件
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:" + uploadDir + "/");
     }
 
     /**

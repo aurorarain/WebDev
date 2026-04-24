@@ -62,6 +62,43 @@ public class ProjectLifecycleController {
     }
 
     /**
+     * 加入项目预览 - 多用户并发支持
+     */
+    @PostMapping("/join")
+    public ResponseEntity<ApiResponse<ProcessStatus>> joinProject(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        String viewerId = body.get("viewerId");
+        if (viewerId == null || viewerId.isBlank()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("viewerId is required"));
+        }
+        return projectService.getById(id)
+                .map(project -> {
+                    if (!Boolean.TRUE.equals(project.getEmbeddedEnabled())) {
+                        return ResponseEntity.ok(ApiResponse.success("Not an embedded project", ProcessStatus.error("Embedded deployment not enabled")));
+                    }
+                    ProcessStatus status = processManager.joinProject(id, project, viewerId);
+                    return ResponseEntity.ok(ApiResponse.success(status));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * 离开项目预览
+     */
+    @PostMapping("/leave")
+    public ResponseEntity<ApiResponse<ProcessStatus>> leaveProject(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        String viewerId = body.get("viewerId");
+        if (viewerId == null || viewerId.isBlank()) {
+            return ResponseEntity.ok(ApiResponse.success(ProcessStatus.stopped()));
+        }
+        ProcessStatus status = processManager.leaveProject(id, viewerId);
+        return ResponseEntity.ok(ApiResponse.success(status));
+    }
+
+    /**
      * 从 GitHub 克隆并构建项目（仅管理员）
      */
     @PostMapping("/clone")
@@ -73,11 +110,12 @@ public class ProjectLifecycleController {
         if (githubUrl == null || githubUrl.isBlank()) {
             return ResponseEntity.badRequest().body(ApiResponse.error("GitHub URL is required"));
         }
+        String branch = body.getOrDefault("branch", "");
 
         return projectService.getById(id)
                 .map(project -> {
                     String slug = project.getSlug();
-                    ProjectBuildService.BuildResult result = buildService.cloneAndBuild(githubUrl, slug);
+                    ProjectBuildService.BuildResult result = buildService.cloneAndBuild(githubUrl, slug, branch);
                     return ResponseEntity.ok(ApiResponse.success(result));
                 })
                 .orElse(ResponseEntity.notFound().build());

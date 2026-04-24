@@ -26,6 +26,12 @@ export default function ProjectDemoPage() {
   const isLeaving = useRef(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  /* 每个浏览器标签页的唯一 viewerId，用于服务端连接计数 */
+  const viewerId = useRef(
+    sessionStorage.getItem('sw_viewer_id') ||
+    (() => { const id = crypto.randomUUID(); sessionStorage.setItem('sw_viewer_id', id); return id; })()
+  );
+
   /* 加载项目数据 */
   useEffect(() => {
     if (!slug) return;
@@ -56,7 +62,7 @@ export default function ProjectDemoPage() {
     }, 500);
 
     try {
-      const res = await siteApi.startProject(project.id);
+      const res = await siteApi.joinProject(project.id, viewerId.current);
       const status: StatusResponse = res.data?.data;
 
       if (status?.state === 'RUNNING') {
@@ -68,7 +74,12 @@ export default function ProjectDemoPage() {
       } else if (status?.state === 'ERROR') {
         clearInterval(progressInterval);
         setDemoState('error');
-        setErrorMsg(status.message || '启动失败');
+        /* 处理 CONFLICT 状态：其他用户正在使用服务器 */
+        if (status.message?.startsWith('CONFLICT:')) {
+          setErrorMsg('有其他用户正在预览其他项目 — 当前服务器内存不足，无法同时运行多个项目，请稍后再试');
+        } else {
+          setErrorMsg(status.message || '启动失败');
+        }
       } else {
         /* 需要轮询等待启动完成 */
         clearInterval(progressInterval);
@@ -123,7 +134,7 @@ export default function ProjectDemoPage() {
     }, 300);
 
     try {
-      await siteApi.stopProject(project.id);
+      await siteApi.leaveProject(project.id, viewerId.current);
       clearInterval(progressInterval);
       setProgress(100);
       await new Promise(r => setTimeout(r, 300));
@@ -166,6 +177,15 @@ export default function ProjectDemoPage() {
       if (pollRef.current) clearInterval(pollRef.current);
     };
   }, []);
+
+  /* 心跳：demo 运行中每 60s 刷新一次状态，保持服务端连接活跃 */
+  useEffect(() => {
+    if (demoState !== 'running' || !project) return;
+    const heartbeat = setInterval(() => {
+      siteApi.getProjectStatus(project.id).catch(() => {});
+    }, 60000);
+    return () => clearInterval(heartbeat);
+  }, [demoState, project]);
 
   return (
     <div className="fixed inset-0 bg-sw-bg z-50 flex flex-col">

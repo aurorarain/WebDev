@@ -102,6 +102,18 @@ export default function ProjectDetailPage() {
         >
           <h1 className="font-display text-4xl font-bold mb-4">{project.title}</h1>
 
+          {/* 缩略图 */}
+          {project.thumbnailUrl && (
+            <div className="mb-6 rounded-2xl overflow-hidden border border-white/50 shadow-sm w-48 h-48 flex-shrink-0">
+              <img
+                src={project.thumbnailUrl}
+                alt={project.title}
+                className="w-full h-full object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-2 mb-6">
             {project.tags?.split(',').map(tag => (
               <span key={tag} className="text-xs px-3 py-1 bg-white/55 backdrop-blur-sm text-sw-accent rounded-full border border-white/40">

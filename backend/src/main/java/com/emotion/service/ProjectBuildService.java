@@ -33,6 +33,7 @@ public class ProjectBuildService {
         private String frontendBuildDir;
         private String suggestedStartCmd;
         private int suggestedPort;
+        private String readmeContent;
     }
 
     /**
@@ -40,9 +41,10 @@ public class ProjectBuildService {
      *
      * @param githubUrl GitHub 仓库地址
      * @param slug      项目标识（用作目录名）
+     * @param branch    分支名（null 或空则使用默认分支）
      * @return 构建结果
      */
-    public BuildResult cloneAndBuild(String githubUrl, String slug) {
+    public BuildResult cloneAndBuild(String githubUrl, String slug, String branch) {
         BuildResult result = new BuildResult();
         try {
             Path projectDir = Path.of(embeddedProjectsDir, slug);
@@ -52,9 +54,14 @@ public class ProjectBuildService {
                 deleteDirectory(projectDir.toFile());
             }
 
-            // 克隆仓库
-            log.info("正在克隆 {} 到 {}", githubUrl, projectDir);
-            exec(projectDir.getParent().toString(), "git", "clone", githubUrl, projectDir.toString());
+            // 克隆仓库（指定分支或使用默认分支）
+            if (branch != null && !branch.isBlank()) {
+                log.info("正在克隆 {} (分支: {}) 到 {}", githubUrl, branch, projectDir);
+                exec(projectDir.getParent().toString(), "git", "clone", "--branch", branch, "--depth", "1", githubUrl, projectDir.toString());
+            } else {
+                log.info("正在克隆 {} (默认分支) 到 {}", githubUrl, projectDir);
+                exec(projectDir.getParent().toString(), "git", "clone", "--depth", "1", githubUrl, projectDir.toString());
+            }
 
             if (!Files.exists(projectDir)) {
                 result.setSuccess(false);
@@ -93,6 +100,17 @@ public class ProjectBuildService {
                     result.setSuggestedStartCmd(String.format(
                             "java -Xmx512m -Xms128m -jar %s --server.port=%d",
                             jars[0].getAbsolutePath(), port));
+                }
+            }
+
+            // 检测并读取 README
+            String[] readmeFiles = {"README.md", "Readme.md", "readme.md"};
+            for (String readmeFile : readmeFiles) {
+                Path readmePath = projectDir.resolve(readmeFile);
+                if (Files.exists(readmePath)) {
+                    result.setReadmeContent(Files.readString(readmePath));
+                    log.info("检测到 README: {}", readmeFile);
+                    break;
                 }
             }
 

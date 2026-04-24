@@ -167,12 +167,15 @@ export default function HomePage() {
             <ChevronDown size={20} className="text-sw-muted/50" />
           </motion.div>
         </motion.div>
+        {/* 过渡 → About */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, transparent 0%, #faf8ff 100%)' }} />
       </section>
 
-      {/* ====== About — 淡紫渐变 ====== */}
-      <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #f5f3ff 0%, #ede9fe 50%, #faf5ff 100%)' }}>
-        <div className="absolute top-0 right-[-10%] w-[400px] h-[400px] bg-purple-200/25 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 left-[-5%] w-[300px] h-[300px] bg-violet-200/20 rounded-full blur-[80px] pointer-events-none" />
+      {/* ====== About — 极淡薰衣草 ====== */}
+      <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #faf8ff 0%, #f5f0ff 40%, #fdfbff 100%)' }}>
+        <div className="absolute top-0 right-[-10%] w-[400px] h-[400px] bg-purple-100/15 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-[-5%] w-[300px] h-[300px] bg-violet-100/10 rounded-full blur-[80px] pointer-events-none" />
         <div className="relative z-10">
           <SectionTitle title="About This Site" subtitle="A personal space for AI experiments, open-source projects, and technical explorations." />
           <motion.div
@@ -185,7 +188,7 @@ export default function HomePage() {
             {techHighlights.map(item => (
               <motion.div key={item.title} variants={fadeUp}>
                 <TiltCard>
-                <GlassCard gradient="from-purple-500 to-indigo-500">
+                <GlassCard gradient="from-purple-400 to-indigo-400">
                   <div className="text-sw-accent mb-4 group-hover:scale-110 transition-transform duration-300 origin-left">{item.icon}</div>
                   <h3 className="font-display text-lg font-semibold mb-2 group-hover:text-sw-accent transition-colors duration-300">{item.title}</h3>
                   <p className="text-sw-muted text-sm leading-relaxed">{item.desc}</p>
@@ -206,11 +209,14 @@ export default function HomePage() {
             </Link>
           </motion.div>
         </div>
+        {/* 过渡 → Tech Stack */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, transparent 0%, #ffffff 100%)' }} />
       </section>
 
       {/* ====== Tech Stack — 白色 ====== */}
       <section className="relative py-28 px-4 overflow-hidden bg-white">
-        <div className="absolute bottom-0 left-[-5%] w-[300px] h-[300px] bg-blue-200/15 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute bottom-0 left-[-5%] w-[300px] h-[300px] bg-blue-100/10 rounded-full blur-[80px] pointer-events-none" />
         <div className="relative z-10">
           <SectionTitle title="Tech Stack" subtitle="Tools and frameworks powering these experiments." />
           <motion.div
@@ -232,108 +238,147 @@ export default function HomePage() {
             ))}
           </motion.div>
         </div>
+        {/* 过渡 → Featured Projects */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, transparent 0%, #fefafc 100%)' }} />
       </section>
 
-      {/* ====== Featured Projects — 淡粉渐变 ====== */}
-      {featuredProjects.length > 0 && (
-        <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #fdf2f8 0%, #fce7f3 50%, #fff5f5 100%)' }}>
-          <div className="absolute top-0 left-[-5%] w-[350px] h-[350px] bg-pink-200/20 rounded-full blur-[90px] pointer-events-none" />
-          <div className="absolute bottom-0 right-[-5%] w-[300px] h-[300px] bg-rose-200/15 rounded-full blur-[80px] pointer-events-none" />
-          <div className="relative z-10">
-            <SectionTitle title="Featured Projects" subtitle="Handpicked works that showcase practical AI and web engineering." />
+      {/* ====== Featured Projects — 极淡玫瑰 ====== */}
+      <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #fefafc 0%, #fdf0f5 40%, #fff8fa 100%)' }}>
+        <div className="absolute top-0 left-[-5%] w-[350px] h-[350px] bg-pink-100/10 rounded-full blur-[90px] pointer-events-none" />
+        <div className="absolute bottom-0 right-[-5%] w-[300px] h-[300px] bg-rose-100/8 rounded-full blur-[80px] pointer-events-none" />
+        <div className="relative z-10">
+          <SectionTitle title="Featured Projects" subtitle="Handpicked works that showcase practical AI and web engineering." />
+          {featuredProjects.length > 0 ? (
+            <>
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.15 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto"
+              >
+                {featuredProjects.map((project) => (
+                  <motion.div key={project.id} variants={fadeUp}>
+                    <TiltCard>
+                    <Link to={`/projects/${project.slug}`} className="block h-full">
+                      <GlassCard gradient="from-pink-400 to-rose-400" className="h-full">
+                        <h3 className="font-display text-lg font-semibold mb-2 group-hover:text-sw-accent transition-colors duration-300">
+                          {project.title}
+                        </h3>
+                        <p className="text-sw-muted text-sm mb-4 line-clamp-2">{project.description}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {project.tags?.split(',').map(tag => (
+                            <span key={tag} className="text-xs px-2.5 py-1 bg-white/50 backdrop-blur-sm rounded-full text-sw-muted">
+                              {tag.trim()}
+                            </span>
+                          ))}
+                        </div>
+                      </GlassCard>
+                    </Link>
+                    </TiltCard>
+                  </motion.div>
+                ))}
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6, duration: 0.6 }}
+                className="text-center mt-12"
+              >
+                <Link to="/projects" className="inline-flex items-center gap-2 text-sw-accent hover:text-sw-accent-2 font-medium transition-colors duration-300">
+                  View all projects <ArrowRight size={16} />
+                </Link>
+              </motion.div>
+            </>
+          ) : (
             <motion.div
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.15 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto"
-            >
-              {featuredProjects.map((project) => (
-                <motion.div key={project.id} variants={fadeUp}>
-                  <TiltCard>
-                  <Link to={`/projects/${project.slug}`} className="block h-full">
-                    <GlassCard gradient="from-pink-500 to-rose-400" className="h-full">
-                      <h3 className="font-display text-lg font-semibold mb-2 group-hover:text-sw-accent transition-colors duration-300">
-                        {project.title}
-                      </h3>
-                      <p className="text-sw-muted text-sm mb-4 line-clamp-2">{project.description}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {project.tags?.split(',').map(tag => (
-                          <span key={tag} className="text-xs px-2.5 py-1 bg-white/50 backdrop-blur-sm rounded-full text-sw-muted">
-                            {tag.trim()}
-                          </span>
-                        ))}
-                      </div>
-                    </GlassCard>
-                  </Link>
-                  </TiltCard>
-                </motion.div>
-              ))}
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="text-center mt-12"
+              transition={{ duration: 0.6 }}
+              className="text-center py-12"
             >
-              <Link to="/projects" className="inline-flex items-center gap-2 text-sw-accent hover:text-sw-accent-2 font-medium transition-colors duration-300">
-                View all projects <ArrowRight size={16} />
+              <p className="text-sw-muted/60 text-sm mb-4">No featured projects yet</p>
+              <Link to="/projects" className="inline-flex items-center gap-2 text-sw-accent hover:text-sw-accent-2 text-sm font-medium transition-colors duration-300">
+                Browse all projects <ArrowRight size={14} />
               </Link>
             </motion.div>
-          </div>
-        </section>
-      )}
+          )}
+        </div>
+        {/* 过渡 → Latest Experiments */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, transparent 0%, #f8f9ff 100%)' }} />
+      </section>
 
-      {/* ====== Latest Experiments — 淡蓝渐变 ====== */}
-      {recentPosts.length > 0 && (
-        <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #eff6ff 0%, #dbeafe 50%, #f0f9ff 100%)' }}>
-          <div className="absolute top-[-10%] left-[20%] w-[350px] h-[350px] bg-indigo-200/15 rounded-full blur-[90px] pointer-events-none" />
-          <div className="absolute bottom-0 right-[-10%] w-[300px] h-[300px] bg-blue-200/15 rounded-full blur-[80px] pointer-events-none" />
-          <div className="relative z-10">
-            <SectionTitle title="Latest Experiments" subtitle="Notes, insights, and lessons from the workbench." />
+      {/* ====== Latest Experiments — 极淡蓝 ====== */}
+      <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #f8f9ff 0%, #f2f4ff 40%, #fafaff 100%)' }}>
+        <div className="absolute top-[-10%] left-[20%] w-[350px] h-[350px] bg-indigo-100/8 rounded-full blur-[90px] pointer-events-none" />
+        <div className="absolute bottom-0 right-[-10%] w-[300px] h-[300px] bg-blue-100/8 rounded-full blur-[80px] pointer-events-none" />
+        <div className="relative z-10">
+          <SectionTitle title="Latest Experiments" subtitle="Notes, insights, and lessons from the workbench." />
+          {recentPosts.length > 0 ? (
+            <>
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.15 }}
+                className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto"
+              >
+                {recentPosts.map((post) => (
+                  <motion.div key={post.id} variants={fadeUp}>
+                    <TiltCard>
+                    <Link to={`/blog/${post.slug}`} className="block h-full">
+                      <GlassCard gradient="from-blue-400 to-indigo-400" className="h-full">
+                        <p className="text-sw-muted text-xs mb-3">
+                          {new Date(post.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </p>
+                        <h3 className="font-display font-semibold mb-2 group-hover:text-sw-accent transition-colors duration-300">{post.title}</h3>
+                        <p className="text-sw-muted text-sm line-clamp-2">{post.excerpt}</p>
+                      </GlassCard>
+                    </Link>
+                    </TiltCard>
+                  </motion.div>
+                ))}
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6, duration: 0.6 }}
+                className="text-center mt-12"
+              >
+                <Link to="/blog" className="inline-flex items-center gap-2 text-sw-accent hover:text-sw-accent-2 font-medium transition-colors duration-300">
+                  Read more posts <ArrowRight size={16} />
+                </Link>
+              </motion.div>
+            </>
+          ) : (
             <motion.div
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.15 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto"
-            >
-              {recentPosts.map((post) => (
-                <motion.div key={post.id} variants={fadeUp}>
-                  <TiltCard>
-                  <Link to={`/blog/${post.slug}`} className="block h-full">
-                    <GlassCard gradient="from-blue-500 to-indigo-400" className="h-full">
-                      <p className="text-sw-muted text-xs mb-3">
-                        {new Date(post.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                      </p>
-                      <h3 className="font-display font-semibold mb-2 group-hover:text-sw-accent transition-colors duration-300">{post.title}</h3>
-                      <p className="text-sw-muted text-sm line-clamp-2">{post.excerpt}</p>
-                    </GlassCard>
-                  </Link>
-                  </TiltCard>
-                </motion.div>
-              ))}
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="text-center mt-12"
+              transition={{ duration: 0.6 }}
+              className="text-center py-12"
             >
-              <Link to="/blog" className="inline-flex items-center gap-2 text-sw-accent hover:text-sw-accent-2 font-medium transition-colors duration-300">
-                Read more posts <ArrowRight size={16} />
+              <p className="text-sw-muted/60 text-sm mb-4">No posts yet — stay tuned!</p>
+              <Link to="/blog" className="inline-flex items-center gap-2 text-sw-accent hover:text-sw-accent-2 text-sm font-medium transition-colors duration-300">
+                Visit blog <ArrowRight size={14} />
               </Link>
             </motion.div>
-          </div>
-        </section>
-      )}
+          )}
+        </div>
+        {/* 过渡 → CTA */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, transparent 0%, #fdf9ff 100%)' }} />
+      </section>
 
-      {/* ====== CTA — 淡紫粉渐变 ====== */}
-      <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #faf5ff 0%, #fdf2f8 50%, #ffffff 100%)' }}>
-        <div className="absolute -top-20 right-[-5%] w-[400px] h-[400px] bg-purple-200/20 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute -bottom-20 left-[-5%] w-[350px] h-[350px] bg-pink-200/20 rounded-full blur-[90px] pointer-events-none" />
+      {/* ====== CTA — 极淡粉紫 → 白 ====== */}
+      <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #fdf9ff 0%, #fef6fb 40%, #ffffff 100%)' }}>
+        <div className="absolute -top-20 right-[-5%] w-[400px] h-[400px] bg-purple-100/8 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute -bottom-20 left-[-5%] w-[350px] h-[350px] bg-pink-100/8 rounded-full blur-[90px] pointer-events-none" />
         <div className="relative z-10">
           <motion.div
             variants={sectionReveal}
@@ -343,8 +388,8 @@ export default function HomePage() {
             className="max-w-3xl mx-auto text-center"
           >
             <div className="p-12 bg-white/65 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl relative overflow-hidden">
-              <div className="absolute -top-20 -right-20 w-72 h-72 bg-purple-300/15 rounded-full blur-[80px] pointer-events-none" />
-              <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-pink-200/15 rounded-full blur-[80px] pointer-events-none" />
+              <div className="absolute -top-20 -right-20 w-72 h-72 bg-purple-100/10 rounded-full blur-[80px] pointer-events-none" />
+              <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-pink-100/8 rounded-full blur-[80px] pointer-events-none" />
               <div className="relative z-10">
                 <MessageCircle size={40} className="mx-auto mb-6 text-sw-accent" />
                 <h2 className="font-display text-3xl font-bold mb-4">Get in Touch</h2>

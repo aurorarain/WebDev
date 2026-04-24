@@ -7,7 +7,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { ArrowLeft, Save } from 'lucide-react';
 import { blogApi } from '../../services/blogApi';
+import { siteApi } from '../../services/siteApi';
 import { BlogPost, PaginatedResponse } from '../../types/site';
+import MarkdownEditor from '../../components/MarkdownEditor';
 
 export default function AdminBlogEditor() {
   const { id } = useParams<{ id: string }>();
@@ -99,6 +101,8 @@ export default function AdminBlogEditor() {
       } else {
         await blogApi.createPost(postData);
       }
+      /* 清理孤立图片 */
+      siteApi.cleanupImages(content).catch(() => {});
       navigate('/admin/blog');
     } catch {
       setError('Failed to save post');
@@ -233,12 +237,11 @@ export default function AdminBlogEditor() {
           {/* 正文编辑 */}
           <div className="bg-sw-surface rounded-xl border border-sw-border p-5">
             <label className="block text-sm font-medium text-sw-muted mb-1.5">Content (Markdown)</label>
-            <textarea
+            <MarkdownEditor
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={16}
-              className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm font-mono placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors resize-y"
+              onChange={setContent}
               placeholder="Write your post content in Markdown..."
+              rows={16}
             />
           </div>
         </div>

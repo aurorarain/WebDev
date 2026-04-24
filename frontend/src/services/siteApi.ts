@@ -34,13 +34,28 @@ export const siteApi = {
     api.delete(`/projects/${id}`, { headers: getAuthHeaders() }),
 
   /* === 动态部署 === */
-  /* 启动嵌入项目 */
-  startProject: (id: number) => api.post(`/projects/${id}/start`),
-  /* 停止嵌入项目 */
-  stopProject: (id: number) => api.post(`/projects/${id}/stop`),
-  /* 获取项目运行状态 */
+  /* 加入 demo（启动或复用进程） */
+  joinProject: (id: number, viewerId: string) =>
+    api.post(`/projects/${id}/join`, { viewerId }),
+  /* 离开 demo（最后一个离开则关闭） */
+  leaveProject: (id: number, viewerId: string) =>
+    api.post(`/projects/${id}/leave`, { viewerId }),
+  /* 获取项目运行状态（同时作为心跳） */
   getProjectStatus: (id: number) => api.get(`/projects/${id}/status`),
   /* 从 GitHub 拉取项目（管理员） */
-  cloneProject: (id: number, githubUrl: string) =>
-    api.post(`/projects/${id}/clone`, { githubUrl }, { headers: getAuthHeaders() }),
+  cloneProject: (id: number, githubUrl: string, branch?: string) =>
+    api.post(`/projects/${id}/clone`, { githubUrl, branch: branch || '' }, { headers: getAuthHeaders() }),
+
+  /* === 图片上传 === */
+  /* 上传图片（管理员） */
+  uploadImage: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post('/upload/image', formData, {
+      headers: { ...getAuthHeaders(), 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  /* 清理孤立图片（管理员） */
+  cleanupImages: (content: string) =>
+    api.post('/upload/cleanup-images', { content }, { headers: getAuthHeaders() }),
 };

@@ -72,6 +72,21 @@ export default function ProjectsPage() {
               <TiltCard>
               <div className="relative overflow-hidden rounded-2xl bg-white/55 backdrop-blur-xl border border-white/50 shadow-sm hover:shadow-xl hover:bg-white/70 transition-all duration-500 group h-full flex flex-col">
                 <div className="h-1 w-full bg-gradient-to-r from-teal-500 to-cyan-400" />
+                {/* 缩略图 */}
+                {project.thumbnailUrl ? (
+                  <div className="w-full h-40 overflow-hidden">
+                    <img
+                      src={project.thumbnailUrl}
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-24 bg-gradient-to-br from-teal-50 to-cyan-50 flex items-center justify-center">
+                    <span className="text-3xl opacity-30">{project.title?.[0] || 'P'}</span>
+                  </div>
+                )}
                 <div className="p-6 flex flex-col flex-1">
                   <h3 className="font-display text-lg font-semibold mb-2 group-hover:text-sw-accent transition-colors duration-300">
                     {project.title}

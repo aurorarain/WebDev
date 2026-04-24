@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +39,8 @@ public class ProjectProcessManager {
         private volatile long lastAccessTime;
         private volatile ProcessStatus.State state;
         private volatile String message;
+        /** 当前正在查看该项目的用户 ID 集合 */
+        private final Set<String> activeViewers = ConcurrentHashMap.newKeySet();
 
         public ProcessInfo(long startTime) {
             this.startTime = startTime;
@@ -147,6 +150,67 @@ public class ProjectProcessManager {
     }
 
     /**
+     * 加入项目 - 多用户并发查看支持
+     * 如果项目已在运行，直接加入查看者列表；否则在内存允许的情况下启动项目
+     */
+    public synchronized ProcessStatus joinProject(Long projectId, Project project, String viewerId) {
+        // 检查该项目是否已经在运行
+        ProcessInfo existing = runningProcesses.get(projectId);
+        if (existing != null && existing.getState() == ProcessStatus.State.RUNNING) {
+            existing.getActiveViewers().add(viewerId);
+            existing.setLastAccessTime(System.currentTimeMillis());
+            log.info("Viewer {} joined running project {} ({} viewers)", viewerId, projectId, existing.getActiveViewers().size());
+            return ProcessStatus.running(getPid(existing.getProcess()));
+        }
+
+        // 检查是否有其他项目正在运行且有活跃查看者
+        for (Map.Entry<Long, ProcessInfo> entry : runningProcesses.entrySet()) {
+            if (!entry.getKey().equals(projectId) && !entry.getValue().getActiveViewers().isEmpty()) {
+                log.warn("Cannot start project {}: other project {} has {} active viewers",
+                    projectId, entry.getKey(), entry.getValue().getActiveViewers().size());
+                return ProcessStatus.error("CONFLICT:有其他用户正在预览其他项目，内存不足无法同时运行");
+            }
+        }
+
+        // 检查服务器内存是否充足
+        if (!checkMemoryAvailable()) {
+            return ProcessStatus.error("服务器内存不足，无法启动项目");
+        }
+
+        // 启动项目
+        ProcessStatus status = startProject(projectId, project);
+        if (status.getState() == ProcessStatus.State.RUNNING) {
+            ProcessInfo info = runningProcesses.get(projectId);
+            if (info != null) {
+                info.getActiveViewers().add(viewerId);
+                log.info("Viewer {} started and joined project {}", viewerId, projectId);
+            }
+        }
+        return status;
+    }
+
+    /**
+     * 离开项目 - 查看者退出时调用
+     * 最后一个查看者离开时自动停止项目进程
+     */
+    public synchronized ProcessStatus leaveProject(Long projectId, String viewerId) {
+        ProcessInfo info = runningProcesses.get(projectId);
+        if (info == null) return ProcessStatus.stopped();
+
+        boolean removed = info.getActiveViewers().remove(viewerId);
+        if (removed) {
+            log.info("Viewer {} left project {} ({} viewers remaining)", viewerId, projectId, info.getActiveViewers().size());
+        }
+
+        // 最后一个查看者离开，停止进程
+        if (info.getActiveViewers().isEmpty()) {
+            log.info("Last viewer left project {}, stopping process", projectId);
+            return stopProject(projectId);
+        }
+        return ProcessStatus.stopped();
+    }
+
+    /**
      * 停止项目进程
      * 先尝试优雅关闭，等待 5 秒后强制终止
      */
@@ -206,12 +270,27 @@ public class ProjectProcessManager {
         long now = System.currentTimeMillis();
         for (Map.Entry<Long, ProcessInfo> entry : runningProcesses.entrySet()) {
             ProcessInfo info = entry.getValue();
-            if (info.getState() == ProcessStatus.State.RUNNING
-                    && now - info.getLastAccessTime() > IDLE_TIMEOUT_MS) {
-                log.info("自动停止空闲项目 {}", entry.getKey());
-                stopProject(entry.getKey());
+
+            // 清理超时未心跳的查看者并检查整体空闲超时
+            if (info.getState() == ProcessStatus.State.RUNNING) {
+                // 检查整体空闲超时（10 分钟无心跳则自动停止）
+                if (now - info.getLastAccessTime() > IDLE_TIMEOUT_MS) {
+                    log.info("自动停止空闲项目 {}", entry.getKey());
+                    stopProject(entry.getKey());
+                }
             }
         }
+    }
+
+    /**
+     * 检查服务器可用内存是否充足（至少 700MB）
+     */
+    private boolean checkMemoryAvailable() {
+        Runtime runtime = Runtime.getRuntime();
+        long maxMemory = runtime.maxMemory();
+        long usedMemory = runtime.totalMemory() - runtime.freeMemory();
+        long availableMB = (maxMemory - usedMemory) / (1024 * 1024);
+        return availableMB > 700;
     }
 
     /**

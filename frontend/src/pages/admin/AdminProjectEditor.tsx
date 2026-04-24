@@ -9,6 +9,7 @@ import remarkGfm from 'remark-gfm';
 import { ArrowLeft, Save } from 'lucide-react';
 import { siteApi } from '../../services/siteApi';
 import { Project } from '../../types/site';
+import MarkdownEditor from '../../components/MarkdownEditor';
 
 export default function AdminProjectEditor() {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +32,7 @@ export default function AdminProjectEditor() {
   /* 嵌入式部署相关状态 */
   const [embeddedEnabled, setEmbeddedEnabled] = useState(false);
   const [githubRepoUrl, setGithubRepoUrl] = useState('');
+  const [githubBranch, setGithubBranch] = useState('');
   const [projectPath, setProjectPath] = useState('');
   const [backendPort, setBackendPort] = useState<number>(8081);
   const [backendStartCmd, setBackendStartCmd] = useState('');
@@ -139,6 +141,8 @@ export default function AdminProjectEditor() {
       } else {
         await siteApi.createProject(projectData);
       }
+      /* 清理孤立图片 */
+      siteApi.cleanupImages(longDescription).catch(() => {});
       navigate('/admin/projects');
     } catch {
       setError('Failed to save project');
@@ -156,7 +160,7 @@ export default function AdminProjectEditor() {
     setCloneStatus('cloning');
     setCloneMessage('正在从 GitHub 拉取项目...');
     try {
-      const res = await siteApi.cloneProject(Number(id), githubRepoUrl.trim());
+      const res = await siteApi.cloneProject(Number(id), githubRepoUrl.trim(), githubBranch.trim());
       const result = res.data?.data;
       if (result?.success) {
         setCloneStatus('success');
@@ -347,12 +351,11 @@ export default function AdminProjectEditor() {
             <label className="block text-sm font-medium text-sw-muted mb-1.5">
               Long Description (Markdown)
             </label>
-            <textarea
+            <MarkdownEditor
               value={longDescription}
-              onChange={(e) => setLongDescription(e.target.value)}
-              rows={14}
-              className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm font-mono placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors resize-y"
+              onChange={setLongDescription}
               placeholder="Detailed project description in Markdown..."
+              rows={14}
             />
           </div>
 
@@ -373,7 +376,7 @@ export default function AdminProjectEditor() {
 
             {embeddedEnabled && (
               <div className="space-y-3 pt-2 border-t border-sw-border">
-                {/* GitHub URL + Clone */}
+                {/* GitHub URL + Branch + Clone */}
                 <div>
                   <label className="block text-sm font-medium text-sw-muted mb-1.5">GitHub 仓库地址</label>
                   <div className="flex gap-2">
@@ -384,6 +387,13 @@ export default function AdminProjectEditor() {
                       className="flex-1 px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
                       placeholder="https://github.com/user/repo"
                     />
+                    <input
+                      type="text"
+                      value={githubBranch}
+                      onChange={(e) => setGithubBranch(e.target.value)}
+                      className="w-28 px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
+                      placeholder="main"
+                    />
                     <button
                       onClick={handleClone}
                       disabled={!githubRepoUrl.trim() || !id || cloneStatus === 'cloning'}
@@ -392,6 +402,7 @@ export default function AdminProjectEditor() {
                       {cloneStatus === 'cloning' ? '拉取中...' : '拉取项目'}
                     </button>
                   </div>
+                  <p className="text-xs text-sw-muted/50 mt-1">分支留空则使用仓库默认分支</p>
                   {cloneMessage && (
                     <p className={`text-xs mt-1 ${cloneStatus === 'error' ? 'text-red-500' : cloneStatus === 'success' ? 'text-green-500' : 'text-sw-muted'}`}>
                       {cloneMessage}
