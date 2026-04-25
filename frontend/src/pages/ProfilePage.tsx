@@ -38,7 +38,7 @@ function ProfilePage() {
         setAvatarUrl(userData.avatarUrl || '');
       }
     } catch {
-      setError('Failed to load profile');
+      setError('加载个人资料失败');
     }
   };
 
@@ -53,10 +53,10 @@ function ProfilePage() {
       const response = await userApi.updateProfile({ email, bio, avatarUrl });
       if (response.data.success) {
         setUser(response.data.data);
-        setSuccess('Profile updated successfully');
+        setSuccess('个人资料已更新');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update profile');
+      setError(err.response?.data?.message || '更新个人资料失败');
     } finally {
       setLoading(false);
     }
@@ -69,12 +69,12 @@ function ProfilePage() {
     setSuccess('');
 
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match');
+      setError('两次输入的密码不一致');
       return;
     }
 
     if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError('密码至少需要 6 个字符');
       return;
     }
 
@@ -83,7 +83,7 @@ function ProfilePage() {
     try {
       const response = await userApi.changePassword(oldPassword, newPassword);
       if (response.data.success) {
-        setSuccess('Password changed. Redirecting to login...');
+        setSuccess('密码已修改，正在跳转到登录...');
         setTimeout(() => {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
@@ -91,7 +91,7 @@ function ProfilePage() {
         }, 2000);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to change password');
+      setError(err.response?.data?.message || '修改密码失败');
     } finally {
       setLoading(false);
     }
@@ -100,7 +100,7 @@ function ProfilePage() {
   /* 格式化日期 */
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    return new Date(dateStr).toLocaleDateString('zh-CN', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -111,8 +111,8 @@ function ProfilePage() {
     <div className="space-y-6">
       {/* 页面标题 */}
       <div>
-        <h1 className="text-2xl font-bold text-sw-text">Admin Profile</h1>
-        <p className="text-sw-muted text-sm mt-1">Manage your account settings — changes will appear on the public About page</p>
+        <h1 className="text-2xl font-bold text-sw-text">个人设置</h1>
+        <p className="text-sw-muted text-sm mt-1">管理你的账户设置，修改将在公开的关于页面中展示</p>
       </div>
 
       {/* 消息提示 */}
@@ -138,7 +138,7 @@ function ProfilePage() {
           }`}
         >
           <User size={14} />
-          Profile
+          个人资料
         </button>
         <button
           onClick={() => setActiveTab('password')}
@@ -149,7 +149,7 @@ function ProfilePage() {
           }`}
         >
           <Key size={14} />
-          Password
+          修改密码
         </button>
       </div>
 
@@ -161,7 +161,7 @@ function ProfilePage() {
             <div>
               <label className="flex items-center gap-2 text-sm font-medium text-sw-muted mb-1.5">
                 <User size={14} />
-                Username
+                用户名
               </label>
               <input
                 type="text"
@@ -169,14 +169,14 @@ function ProfilePage() {
                 disabled
                 className="w-full px-3 py-2 bg-sw-surface-2/50 border border-sw-border rounded-lg text-sw-muted text-sm cursor-not-allowed"
               />
-              <p className="mt-1 text-xs text-sw-muted">Username cannot be changed</p>
+              <p className="mt-1 text-xs text-sw-muted">用户名不可修改</p>
             </div>
 
             {/* 邮箱 */}
             <div>
               <label className="flex items-center gap-2 text-sm font-medium text-sw-muted mb-1.5">
                 <Mail size={14} />
-                Email
+                邮箱
               </label>
               <input
                 type="email"
@@ -191,7 +191,7 @@ function ProfilePage() {
             <div>
               <label className="flex items-center gap-2 text-sm font-medium text-sw-muted mb-1.5">
                 <Image size={14} />
-                Avatar URL
+                头像地址
               </label>
               <input
                 type="url"
@@ -200,34 +200,34 @@ function ProfilePage() {
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
                 placeholder="https://example.com/avatar.jpg"
               />
-              <p className="mt-1 text-xs text-sw-muted">Used on the public About page</p>
+              <p className="mt-1 text-xs text-sw-muted">将展示在公开的关于页面</p>
             </div>
 
             {/* 个人简介 */}
             <div>
               <label className="flex items-center gap-2 text-sm font-medium text-sw-muted mb-1.5">
                 <FileText size={14} />
-                Bio
+                个人简介
               </label>
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 rows={4}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors resize-y"
-                placeholder="Tell visitors about yourself..."
+                placeholder="介绍一下你自己..."
               />
-              <p className="mt-1 text-xs text-sw-muted">Displayed on the public About page. Markdown supported.</p>
+              <p className="mt-1 text-xs text-sw-muted">展示在公开的关于页面，支持 Markdown 格式。</p>
             </div>
 
             {/* 角色（只读） */}
             <div>
               <label className="flex items-center gap-2 text-sm font-medium text-sw-muted mb-1.5">
                 <Shield size={14} />
-                Role
+                角色
               </label>
               <input
                 type="text"
-                value="Administrator"
+                value="管理员"
                 disabled
                 className="w-full px-3 py-2 bg-sw-surface-2/50 border border-sw-border rounded-lg text-sw-muted text-sm cursor-not-allowed"
               />
@@ -237,7 +237,7 @@ function ProfilePage() {
             <div>
               <label className="flex items-center gap-2 text-sm font-medium text-sw-muted mb-1.5">
                 <Clock size={14} />
-                Member Since
+                注册时间
               </label>
               <input
                 type="text"
@@ -253,7 +253,7 @@ function ProfilePage() {
               disabled={loading}
               className="px-6 py-2 rounded-lg text-sm font-medium bg-sw-accent text-white hover:bg-sw-accent/90 disabled:opacity-50 transition-colors"
             >
-              {loading ? 'Saving...' : 'Save Changes'}
+              {loading ? '保存中...' : '保存修改'}
             </button>
           </form>
         </div>
@@ -265,7 +265,7 @@ function ProfilePage() {
           <form onSubmit={handleChangePassword} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-sw-muted mb-1.5">
-                Current Password
+                当前密码
               </label>
               <input
                 type="password"
@@ -273,13 +273,13 @@ function ProfilePage() {
                 onChange={(e) => setOldPassword(e.target.value)}
                 required
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                placeholder="Enter current password"
+                placeholder="请输入当前密码"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-sw-muted mb-1.5">
-                New Password
+                新密码
               </label>
               <input
                 type="password"
@@ -288,13 +288,13 @@ function ProfilePage() {
                 required
                 minLength={6}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                placeholder="At least 6 characters"
+                placeholder="至少 6 个字符"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-sw-muted mb-1.5">
-                Confirm New Password
+                确认新密码
               </label>
               <input
                 type="password"
@@ -302,7 +302,7 @@ function ProfilePage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                placeholder="Re-enter new password"
+                placeholder="再次输入新密码"
               />
             </div>
 
@@ -312,7 +312,7 @@ function ProfilePage() {
               disabled={loading}
               className="px-6 py-2 rounded-lg text-sm font-medium bg-sw-accent text-white hover:bg-sw-accent/90 disabled:opacity-50 transition-colors"
             >
-              {loading ? 'Changing...' : 'Change Password'}
+              {loading ? '修改中...' : '修改密码'}
             </button>
           </form>
         </div>

@@ -29,7 +29,7 @@ export default function AdminGuestbook() {
       const pageData = response.data?.data as PaginatedResponse<GuestbookMessage> | undefined;
       setMessages(pageData?.content || []);
     } catch {
-      setError('Failed to load messages');
+      setError('加载留言失败');
     } finally {
       setLoading(false);
     }
@@ -43,26 +43,26 @@ export default function AdminGuestbook() {
         prev.map((m) => (m.id === id ? { ...m, approved: true } : m))
       );
     } catch {
-      setError('Failed to approve message');
+      setError('审核留言失败');
     }
   };
 
   /* 删除留言 */
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this message?')) return;
+    if (!confirm('确定删除这条留言？')) return;
 
     try {
       await guestbookApi.deleteMessage(id);
       setMessages((prev) => prev.filter((m) => m.id !== id));
     } catch {
-      setError('Failed to delete message');
+      setError('删除留言失败');
     }
   };
 
   /* 格式化日期 */
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    return new Date(dateStr).toLocaleDateString('zh-CN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -81,7 +81,7 @@ export default function AdminGuestbook() {
     <div className="space-y-6">
       {/* 头部 */}
       <div>
-        <h1 className="text-2xl font-bold text-sw-text">Guestbook Messages</h1>
+        <h1 className="text-2xl font-bold text-sw-text">留言管理</h1>
       </div>
 
       {/* 错误提示 */}
@@ -101,7 +101,7 @@ export default function AdminGuestbook() {
               : 'bg-sw-surface text-sw-muted hover:text-sw-text'
           }`}
         >
-          Pending ({messages.filter((m) => !m.approved).length})
+          待审核 ({messages.filter((m) => !m.approved).length})
         </button>
         <button
           onClick={() => setActiveTab('all')}
@@ -111,7 +111,7 @@ export default function AdminGuestbook() {
               : 'bg-sw-surface text-sw-muted hover:text-sw-text'
           }`}
         >
-          All ({messages.length})
+          全部 ({messages.length})
         </button>
       </div>
 
@@ -124,7 +124,7 @@ export default function AdminGuestbook() {
         /* 空状态 */
         <div className="bg-sw-surface rounded-xl border border-sw-border p-12 text-center">
           <p className="text-sw-muted">
-            {activeTab === 'pending' ? 'No pending messages.' : 'No messages yet.'}
+            {activeTab === 'pending' ? '暂无待审核留言。' : '暂无留言。'}
           </p>
         </div>
       ) : (

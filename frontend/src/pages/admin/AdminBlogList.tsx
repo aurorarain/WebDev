@@ -26,7 +26,7 @@ export default function AdminBlogList() {
       const pageData = response.data?.data as PaginatedResponse<BlogPost> | undefined;
       setPosts(pageData?.content || []);
     } catch {
-      setError('Failed to load blog posts');
+      setError('加载博客文章失败');
     } finally {
       setLoading(false);
     }
@@ -34,13 +34,13 @@ export default function AdminBlogList() {
 
   /* 删除博文 */
   const handleDelete = async (id: number, title: string) => {
-    if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+    if (!confirm(`删除 "${title}"？此操作不可撤销。`)) return;
 
     try {
       await blogApi.deletePost(id);
       setPosts((prev) => prev.filter((p) => p.id !== id));
     } catch {
-      setError('Failed to delete post');
+      setError('删除文章失败');
     }
   };
 
@@ -49,13 +49,13 @@ export default function AdminBlogList() {
     if (status === 'PUBLISHED') {
       return (
         <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-green-50 text-green-600 border border-green-200">
-          Published
+          已发布
         </span>
       );
     }
     return (
       <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-yellow-50 text-yellow-600 border border-yellow-200">
-        Draft
+        草稿
       </span>
     );
   };
@@ -63,7 +63,7 @@ export default function AdminBlogList() {
   /* 格式化日期 */
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    return new Date(dateStr).toLocaleDateString('zh-CN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -74,13 +74,13 @@ export default function AdminBlogList() {
     <div className="space-y-6">
       {/* 头部：标题 + 新建按钮 */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-sw-text">Blog Posts</h1>
+        <h1 className="text-2xl font-bold text-sw-text">博客文章</h1>
         <Link
           to="/admin/blog/new"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-sw-accent text-white hover:bg-sw-accent/90 transition-colors"
         >
           <Plus size={16} />
-          New Post
+          新建文章
         </Link>
       </div>
 
@@ -99,7 +99,7 @@ export default function AdminBlogList() {
       ) : posts.length === 0 ? (
         /* 空状态 */
         <div className="bg-sw-surface rounded-xl border border-sw-border p-12 text-center">
-          <p className="text-sw-muted">No blog posts yet. Create your first post.</p>
+          <p className="text-sw-muted">暂无博客文章，创建你的第一篇博文。</p>
         </div>
       ) : (
         /* 博文列表 */
@@ -108,10 +108,10 @@ export default function AdminBlogList() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-sw-border">
-                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Title</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Status</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Created</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Actions</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">标题</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">状态</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">创建时间</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">操作</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-sw-border">
@@ -127,14 +127,14 @@ export default function AdminBlogList() {
                         <Link
                           to={`/admin/blog/${post.id}`}
                           className="p-1.5 rounded-md text-sw-muted hover:text-sw-text hover:bg-sw-surface-2 transition-colors"
-                          title="Edit"
+                          title="编辑"
                         >
                           <Edit size={15} />
                         </Link>
                         <button
                           onClick={() => handleDelete(post.id, post.title)}
                           className="p-1.5 rounded-md text-sw-muted hover:text-red-600 hover:bg-red-50 transition-colors"
-                          title="Delete"
+                          title="删除"
                         >
                           <Trash2 size={15} />
                         </button>

@@ -46,7 +46,7 @@ export default function FerDemoPage() {
         setError(response.message);
       }
     } catch {
-      setError('Prediction failed. Please check if the backend service is running.');
+      setError('预测失败，请检查后端服务是否正常运行。');
     } finally {
       setLoading(false);
     }
@@ -73,16 +73,16 @@ export default function FerDemoPage() {
           className="inline-flex items-center gap-2 text-sw-muted hover:text-sw-text transition-colors mb-8"
         >
           <ArrowLeft size={16} />
-          <span className="text-sm">Back to Projects</span>
+          <span className="text-sm">返回项目列表</span>
         </Link>
 
         {/* 页面标题 */}
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-sw-text tracking-tight">
-            Facial Emotion Recognition
+            人脸情绪识别
           </h1>
           <p className="mt-3 text-sw-muted text-lg">
-            Try our live emotion recognition demo
+            体验实时情绪识别演示
           </p>
         </div>
 
@@ -98,7 +98,7 @@ export default function FerDemoPage() {
               }`}
             >
               <Upload size={16} />
-              Upload Image
+              上传图片
             </button>
             <button
               onClick={() => { setActiveTab('webcam'); setResult(null); setError(''); }}
@@ -109,7 +109,7 @@ export default function FerDemoPage() {
               }`}
             >
               <Camera size={16} />
-              Live Webcam
+              实时摄像头
             </button>
           </div>
         </div>
@@ -122,7 +122,7 @@ export default function FerDemoPage() {
               <ImageUploader onImageSelect={handleImageSelect} />
               {loading && (
                 <div className="mt-6 text-center text-sw-muted text-sm">
-                  Analyzing...
+                  分析中...
                 </div>
               )}
             </div>
@@ -133,7 +133,7 @@ export default function FerDemoPage() {
             <div>
               <div className="flex justify-between items-center mb-4">
                 <span className="text-sw-text font-medium">
-                  {capturing ? 'Real-time detection active' : 'Start real-time detection'}
+                  {capturing ? '实时检测已启动' : '启动实时检测'}
                 </span>
                 <button
                   onClick={() => {
@@ -149,10 +149,10 @@ export default function FerDemoPage() {
                       : 'bg-green-500/10 text-green-600 hover:bg-green-500/20 border border-green-500/20'
                   }`}
                 >
-                  {capturing ? 'Stop' : 'Start'}
+                  {capturing ? '停止' : '启动'}
                 </button>
               </div>
-              <Suspense fallback={<div className="text-center py-8 text-sw-muted">Loading camera...</div>}>
+              <Suspense fallback={<div className="text-center py-8 text-sw-muted">正在加载摄像头...</div>}>
                 <WebcamCapture
                   onCapture={handleWebcamCapture}
                   isCapturing={capturing}
@@ -171,7 +171,7 @@ export default function FerDemoPage() {
           {/* 识别结果 */}
           {result && result.faces.length > 0 && !(activeTab === 'webcam' && capturing) && (
             <div className="mt-6 space-y-4">
-              <h3 className="text-lg font-semibold text-sw-text">Results</h3>
+              <h3 className="text-lg font-semibold text-sw-text">识别结果</h3>
               {result.faces.map((face: FaceResult, index: number) => (
                 <div
                   key={index}
@@ -183,7 +183,7 @@ export default function FerDemoPage() {
                         {face.emotion}
                       </p>
                       <p className="text-sw-muted text-sm">
-                        Confidence: {(face.confidence * 100).toFixed(1)}%
+                        置信度： {(face.confidence * 100).toFixed(1)}%
                       </p>
                     </div>
                   </div>
@@ -214,7 +214,7 @@ export default function FerDemoPage() {
                 </div>
               ))}
               <p className="text-xs text-sw-muted">
-                Processing time: {result.processingTime.toFixed(2)}s
+                处理时间： {result.processingTime.toFixed(2)}s
               </p>
             </div>
           )}
@@ -224,7 +224,7 @@ export default function FerDemoPage() {
         <div className="flex items-center justify-center gap-2 text-sw-muted text-sm">
           <Cpu size={14} />
           <span>
-            Built with Spring Boot, OpenCV SSD face detection, and ONNX emotion classification model
+            基于 Spring Boot、OpenCV SSD 人脸检测和 ONNX 情绪分类模型构建
           </span>
         </div>
       </div>

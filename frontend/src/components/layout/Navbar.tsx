@@ -37,11 +37,11 @@ export default function Navbar() {
   const isAuthenticated = !!localStorage.getItem('token');
 
   const navLinks = [
-    { to: '/', label: 'Home' },
-    { to: '/about', label: 'About' },
-    { to: '/projects', label: 'Projects' },
-    { to: '/blog', label: 'Experiment Log' },
-    { to: '/guestbook', label: 'Guestbook' },
+    { to: '/', label: '首页' },
+    { to: '/about', label: '关于' },
+    { to: '/projects', label: '项目' },
+    { to: '/blog', label: '实验日志' },
+    { to: '/guestbook', label: '留言板' },
   ];
 
   return (
@@ -123,14 +123,14 @@ export default function Navbar() {
                 to="/admin"
                 className="block py-2 text-sm text-sw-muted hover:text-sw-accent"
               >
-                Admin Panel
+                管理后台
               </Link>
             ) : (
               <button
                 onClick={() => { setMobileOpen(false); openLogin(); }}
                 className="block py-2 text-sm text-sw-muted hover:text-sw-accent"
               >
-                Login
+                登录
               </button>
             )}
           </div>

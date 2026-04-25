@@ -77,10 +77,10 @@ export default function AdminProjectEditor() {
           setHealthCheckUrl(project.healthCheckUrl || '');
           setFrontendBuildDir(project.frontendBuildDir || '');
         } else {
-          setError('Project not found');
+          setError('项目未找到');
         }
       } catch {
-        setError('Failed to load project');
+        setError('加载项目失败');
       } finally {
         setLoading(false);
       }
@@ -107,7 +107,7 @@ export default function AdminProjectEditor() {
   /* 保存项目 */
   const handleSave = async () => {
     if (!title.trim()) {
-      setError('Title is required');
+      setError('标题为必填项');
       return;
     }
 
@@ -145,7 +145,7 @@ export default function AdminProjectEditor() {
       siteApi.cleanupImages(longDescription).catch(() => {});
       navigate('/admin/projects');
     } catch {
-      setError('Failed to save project');
+      setError('保存项目失败');
     } finally {
       setSaving(false);
     }
@@ -202,7 +202,7 @@ export default function AdminProjectEditor() {
             <ArrowLeft size={18} />
           </button>
           <h1 className="text-2xl font-bold text-sw-text">
-            {isEditing ? 'Edit Project' : 'New Project'}
+            {isEditing ? '编辑项目' : '新建项目'}
           </h1>
         </div>
         <button
@@ -211,7 +211,7 @@ export default function AdminProjectEditor() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-sw-accent text-white hover:bg-sw-accent/90 disabled:opacity-50 transition-colors"
         >
           <Save size={16} />
-          {saving ? 'Saving...' : 'Save'}
+          {saving ? '保存中...' : '保存'}
         </button>
       </div>
 
@@ -229,67 +229,67 @@ export default function AdminProjectEditor() {
           <div className="bg-sw-surface rounded-xl border border-sw-border p-5 space-y-4">
             {/* 标题 */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Title</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">标题</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                placeholder="Project title"
+                placeholder="项目标题"
               />
             </div>
 
             {/* Slug */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Slug</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">路径别名</label>
               <input
                 type="text"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                placeholder="project-url-slug"
+                placeholder="项目路径别名"
               />
             </div>
 
             {/* 简短描述 */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Description</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">描述</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={2}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors resize-none"
-                placeholder="Brief project description"
+                placeholder="项目简短描述"
               />
             </div>
 
             {/* 分类 */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Category</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">分类</label>
               <input
                 type="text"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                placeholder="e.g. AI, Web, Robotics"
+                placeholder="例如：AI、Web、机器人"
               />
             </div>
 
             {/* 标签 */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Tags</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">标签</label>
               <input
                 type="text"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                placeholder="Comma separated: ONNX, OpenCV, React"
+                placeholder="逗号分隔：ONNX、OpenCV、React"
               />
             </div>
 
             {/* 缩略图 URL */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Thumbnail URL</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">缩略图地址</label>
               <input
                 type="text"
                 value={thumbnailUrl}
@@ -301,7 +301,7 @@ export default function AdminProjectEditor() {
 
             {/* Demo URL */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Demo URL</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">演示地址</label>
               <input
                 type="text"
                 value={demoUrl}
@@ -313,7 +313,7 @@ export default function AdminProjectEditor() {
 
             {/* Repo URL */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Repo URL</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">仓库地址</label>
               <input
                 type="text"
                 value={repoUrl}
@@ -332,11 +332,11 @@ export default function AdminProjectEditor() {
                   onChange={(e) => setFeatured(e.target.checked)}
                   className="w-4 h-4 rounded border-sw-border bg-sw-surface-2 text-sw-accent focus:ring-sw-accent/30"
                 />
-                <span className="text-sm text-sw-muted">Featured</span>
+                <span className="text-sm text-sw-muted">精选</span>
               </label>
 
               <div className="flex items-center gap-2">
-                <label className="text-sm text-sw-muted">Sort Order</label>
+                <label className="text-sm text-sw-muted">排序权重</label>
                 <input
                   type="number"
                   value={sortOrder}
@@ -355,7 +355,7 @@ export default function AdminProjectEditor() {
             <MarkdownEditor
               value={longDescription}
               onChange={setLongDescription}
-              placeholder="Detailed project description in Markdown..."
+              placeholder="使用 Markdown 撰写项目详细说明..."
               rows={14}
             />
           </div>
@@ -476,12 +476,12 @@ export default function AdminProjectEditor() {
 
         {/* 右侧：Markdown 预览 */}
         <div className="bg-sw-surface rounded-xl border border-sw-border p-5 h-fit">
-          <h3 className="text-sm font-medium text-sw-muted mb-3">Preview</h3>
+          <h3 className="text-sm font-medium text-sw-muted mb-3">预览</h3>
           <div className="prose prose-sm max-w-none text-sw-text">
             {markdownPreview ? (
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdownPreview}</ReactMarkdown>
             ) : (
-              <p className="text-sw-muted italic">Start writing to see a preview...</p>
+              <p className="text-sw-muted italic">开始撰写以预览效果...</p>
             )}
           </div>
         </div>

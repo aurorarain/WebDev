@@ -26,7 +26,7 @@ export default function GuestbookPage() {
       setForm({ name: '', email: '', message: '' });
       setTimeout(() => setSubmitted(false), 3000);
     } catch {
-      setError('Failed to submit. Please try again.');
+      setError('提交失败，请重试。');
     }
   };
 
@@ -43,8 +43,8 @@ export default function GuestbookPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h1 className="font-display text-4xl font-bold text-center mb-4">Guestbook</h1>
-          <p className="text-sw-muted text-center mb-12">Leave a message or share your thoughts</p>
+          <h1 className="font-display text-4xl font-bold text-center mb-4">留言板</h1>
+          <p className="text-sw-muted text-center mb-12">留下你的想法或分享你的故事</p>
         </motion.div>
 
         {/* 留言表单 */}
@@ -59,27 +59,27 @@ export default function GuestbookPage() {
           <div className="p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <input
-                type="text" placeholder="Your name *" required
+                type="text" placeholder="你的名字 *" required
                 value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 className="px-4 py-2.5 bg-white/60 backdrop-blur-sm border border-white/40 rounded-xl text-sw-text placeholder-sw-muted/50 focus:border-sw-accent focus:outline-none transition-colors"
               />
               <input
-                type="email" placeholder="Email (optional)"
+                type="email" placeholder="邮箱（选填）"
                 value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                 className="px-4 py-2.5 bg-white/60 backdrop-blur-sm border border-white/40 rounded-xl text-sw-text placeholder-sw-muted/50 focus:border-sw-accent focus:outline-none transition-colors"
               />
             </div>
             <textarea
-              placeholder="Your message *" required rows={4}
+              placeholder="留言内容 *" required rows={4}
               value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
               className="w-full px-4 py-2.5 bg-white/60 backdrop-blur-sm border border-white/40 rounded-xl text-sw-text placeholder-sw-muted/50 focus:border-sw-accent focus:outline-none mb-4 resize-none transition-colors"
             />
             <div className="flex items-center justify-between">
-              {submitted && <p className="text-green-600 text-sm">Message submitted for review!</p>}
+              {submitted && <p className="text-green-600 text-sm">留言已提交，等待审核！</p>}
               {error && <p className="text-red-600 text-sm">{error}</p>}
               <button type="submit"
                 className="ml-auto px-6 py-2 bg-sw-accent text-white rounded-full hover:bg-sw-accent/90 transition-all duration-300 flex items-center gap-2 shadow-md shadow-sw-accent/20">
-                <Send size={16} /> Submit
+                <Send size={16} /> 提交
               </button>
             </div>
           </div>
@@ -99,7 +99,7 @@ export default function GuestbookPage() {
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium text-sm">{msg.name}</span>
                 <span className="text-sw-muted text-xs">
-                  {new Date(msg.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  {new Date(msg.createdAt).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
               <p className="text-sw-muted text-sm">{msg.message}</p>
@@ -107,7 +107,7 @@ export default function GuestbookPage() {
           ))}
         </div>
 
-        {messages.length === 0 && <p className="text-center text-sw-muted">No messages yet. Be the first!</p>}
+        {messages.length === 0 && <p className="text-center text-sw-muted">暂无留言，成为第一个留言的人吧！</p>}
       </div>
     </div>
   );

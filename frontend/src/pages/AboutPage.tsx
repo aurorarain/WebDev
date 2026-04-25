@@ -35,7 +35,7 @@ export default function AboutPage() {
     }).catch(() => {});
   }, []);
 
-  if (!about) return <div className="min-h-screen flex items-center justify-center text-sw-muted">Loading...</div>;
+  if (!about) return <div className="min-h-screen flex items-center justify-center text-sw-muted">加载中...</div>;
 
   return (
     /* 淡紫渐变整页背景 */
@@ -85,7 +85,7 @@ export default function AboutPage() {
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="mb-16"
           >
-            <h2 className="font-display text-2xl font-bold mb-8">Tech Stack</h2>
+            <h2 className="font-display text-2xl font-bold mb-8">技术栈</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {about.skills.map(group => (
                 <div key={group.category} className="relative overflow-hidden rounded-2xl bg-white/55 backdrop-blur-md border border-white/50 shadow-sm hover:shadow-md transition-all duration-300">
@@ -114,7 +114,7 @@ export default function AboutPage() {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            <h2 className="font-display text-2xl font-bold mb-8">Education</h2>
+            <h2 className="font-display text-2xl font-bold mb-8">教育经历</h2>
             <div className="space-y-4">
               {about.education.map(edu => (
                 <div key={edu.school} className="flex items-start gap-4 p-5 bg-white/55 backdrop-blur-md rounded-2xl border border-white/50 shadow-sm">

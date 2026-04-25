@@ -48,10 +48,10 @@ export default function AdminBlogEditor() {
           setContent(post.content || '');
           setStatus(post.status);
         } else {
-          setError('Post not found');
+          setError('文章未找到');
         }
       } catch {
-        setError('Failed to load post');
+        setError('加载文章失败');
       } finally {
         setLoading(false);
       }
@@ -78,7 +78,7 @@ export default function AdminBlogEditor() {
   /* 保存博文 */
   const handleSave = async () => {
     if (!title.trim()) {
-      setError('Title is required');
+      setError('标题为必填项');
       return;
     }
 
@@ -105,7 +105,7 @@ export default function AdminBlogEditor() {
       siteApi.cleanupImages(content).catch(() => {});
       navigate('/admin/blog');
     } catch {
-      setError('Failed to save post');
+      setError('保存文章失败');
     } finally {
       setSaving(false);
     }
@@ -135,7 +135,7 @@ export default function AdminBlogEditor() {
             <ArrowLeft size={18} />
           </button>
           <h1 className="text-2xl font-bold text-sw-text">
-            {isEditing ? 'Edit Post' : 'New Post'}
+            {isEditing ? '编辑文章' : '新建文章'}
           </h1>
         </div>
         <button
@@ -144,7 +144,7 @@ export default function AdminBlogEditor() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-sw-accent text-white hover:bg-sw-accent/90 disabled:opacity-50 transition-colors"
         >
           <Save size={16} />
-          {saving ? 'Saving...' : 'Save'}
+          {saving ? '保存中...' : '保存'}
         </button>
       </div>
 
@@ -162,85 +162,85 @@ export default function AdminBlogEditor() {
           <div className="bg-sw-surface rounded-xl border border-sw-border p-5 space-y-4">
             {/* 标题 */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Title</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">标题</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                placeholder="Post title"
+                placeholder="文章标题"
               />
             </div>
 
             {/* Slug */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Slug</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">路径别名</label>
               <input
                 type="text"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                placeholder="post-url-slug"
+                placeholder="文章路径别名"
               />
             </div>
 
             {/* 分类 */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Category</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">分类</label>
               <input
                 type="text"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                placeholder="e.g. AI, Tutorial"
+                placeholder="例如：AI、教程"
               />
             </div>
 
             {/* 标签 */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Tags</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">标签</label>
               <input
                 type="text"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                placeholder="Comma separated: AI, ML, OpenCV"
+                placeholder="逗号分隔：AI、ML、OpenCV"
               />
             </div>
 
             {/* 摘要 */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Excerpt</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">摘要</label>
               <textarea
                 value={excerpt}
                 onChange={(e) => setExcerpt(e.target.value)}
                 rows={2}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors resize-none"
-                placeholder="Brief description of the post"
+                placeholder="文章简短描述"
               />
             </div>
 
             {/* 状态选择 */}
             <div>
-              <label className="block text-sm font-medium text-sw-muted mb-1.5">Status</label>
+              <label className="block text-sm font-medium text-sw-muted mb-1.5">状态</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as 'DRAFT' | 'PUBLISHED')}
                 className="w-full px-3 py-2 bg-sw-surface-2 border border-sw-border rounded-lg text-sw-text text-sm focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
               >
-                <option value="DRAFT">Draft</option>
-                <option value="PUBLISHED">Published</option>
+                <option value="DRAFT">草稿</option>
+                <option value="PUBLISHED">已发布</option>
               </select>
             </div>
           </div>
 
           {/* 正文编辑 */}
           <div className="bg-sw-surface rounded-xl border border-sw-border p-5">
-            <label className="block text-sm font-medium text-sw-muted mb-1.5">Content (Markdown)</label>
+            <label className="block text-sm font-medium text-sw-muted mb-1.5">正文（Markdown）</label>
             <MarkdownEditor
               value={content}
               onChange={setContent}
-              placeholder="Write your post content in Markdown..."
+              placeholder="使用 Markdown 撰写文章内容..."
               rows={16}
             />
           </div>
@@ -248,12 +248,12 @@ export default function AdminBlogEditor() {
 
         {/* 右侧：Markdown 预览 */}
         <div className="bg-sw-surface rounded-xl border border-sw-border p-5">
-          <h3 className="text-sm font-medium text-sw-muted mb-3">Preview</h3>
+          <h3 className="text-sm font-medium text-sw-muted mb-3">预览</h3>
           <div className="prose prose-sm max-w-none text-sw-text">
             {markdownPreview ? (
               <ReactMarkdown>{markdownPreview}</ReactMarkdown>
             ) : (
-              <p className="text-sw-muted italic">Start writing to see a preview...</p>
+              <p className="text-sw-muted italic">开始撰写以预览效果...</p>
             )}
           </div>
         </div>

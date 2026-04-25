@@ -26,7 +26,7 @@ export default function AdminProjectList() {
       const projects = response.data?.data as Project[] | undefined;
       setProjects(Array.isArray(projects) ? projects : []);
     } catch {
-      setError('Failed to load projects');
+      setError('加载项目失败');
     } finally {
       setLoading(false);
     }
@@ -34,13 +34,13 @@ export default function AdminProjectList() {
 
   /* 删除项目 */
   const handleDelete = async (id: number, title: string) => {
-    if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+    if (!confirm(`删除 "${title}"？此操作不可撤销。`)) return;
 
     try {
       await siteApi.deleteProject(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
     } catch {
-      setError('Failed to delete project');
+      setError('删除项目失败');
     }
   };
 
@@ -54,13 +54,13 @@ export default function AdminProjectList() {
     <div className="space-y-6">
       {/* 头部：标题 + 新建按钮 */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-sw-text">Projects</h1>
+        <h1 className="text-2xl font-bold text-sw-text">项目管理</h1>
         <Link
           to="/admin/projects/new"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-sw-accent text-white hover:bg-sw-accent/90 transition-colors"
         >
           <Plus size={16} />
-          New Project
+          新建项目
         </Link>
       </div>
 
@@ -79,7 +79,7 @@ export default function AdminProjectList() {
       ) : projects.length === 0 ? (
         /* 空状态 */
         <div className="bg-sw-surface rounded-xl border border-sw-border p-12 text-center">
-          <p className="text-sw-muted">No projects yet. Add your first project.</p>
+          <p className="text-sw-muted">暂无项目，添加你的第一个项目。</p>
         </div>
       ) : (
         /* 项目列表 */
@@ -88,11 +88,11 @@ export default function AdminProjectList() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-sw-border">
-                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Title</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Category</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Featured</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Sort</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Actions</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">标题</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">分类</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">精选</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">排序</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">操作</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-sw-border">
@@ -110,7 +110,7 @@ export default function AdminProjectList() {
                       {project.featured ? (
                         <span className="inline-flex items-center gap-1 text-xs text-yellow-600">
                           <Star size={12} fill="currentColor" />
-                          Featured
+                          精选
                         </span>
                       ) : (
                         <span className="text-xs text-sw-muted">-</span>
@@ -122,14 +122,14 @@ export default function AdminProjectList() {
                         <Link
                           to={`/admin/projects/${project.id}`}
                           className="p-1.5 rounded-md text-sw-muted hover:text-sw-text hover:bg-sw-surface-2 transition-colors"
-                          title="Edit"
+                          title="编辑"
                         >
                           <Edit size={15} />
                         </Link>
                         <button
                           onClick={() => handleDelete(project.id, project.title)}
                           className="p-1.5 rounded-md text-sw-muted hover:text-red-600 hover:bg-red-50 transition-colors"
-                          title="Delete"
+                          title="删除"
                         >
                           <Trash2 size={15} />
                         </button>

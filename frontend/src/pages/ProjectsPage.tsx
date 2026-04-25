@@ -9,7 +9,7 @@ import type { Project } from '../types/site';
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [filter, setFilter] = useState('All');
+  const [filter, setFilter] = useState('全部');
 
   useEffect(() => {
     siteApi.getProjects().then(res => {
@@ -17,8 +17,8 @@ export default function ProjectsPage() {
     }).catch(() => {});
   }, []);
 
-  const categories = ['All', ...Array.from(new Set(projects.map(p => p.category).filter(Boolean)))];
-  const filtered = filter === 'All' ? projects : projects.filter(p => p.category === filter);
+  const categories = ['全部', ...Array.from(new Set(projects.map(p => p.category).filter(Boolean)))];
+  const filtered = filter === '全部' ? projects : projects.filter(p => p.category === filter);
 
   return (
     /* 淡青蓝渐变整页背景 */
@@ -33,8 +33,8 @@ export default function ProjectsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h1 className="font-display text-4xl font-bold text-center mb-4">Projects</h1>
-          <p className="text-sw-muted text-center mb-12">A collection of my experiments and builds</p>
+          <h1 className="font-display text-4xl font-bold text-center mb-4">项目</h1>
+          <p className="text-sw-muted text-center mb-12">实验与作品合集</p>
         </motion.div>
 
         {/* 分类筛选 */}
@@ -101,7 +101,7 @@ export default function ProjectsPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Link to={`/projects/${project.slug}`}
-                      className="text-sm text-sw-accent hover:underline">View Details</Link>
+                      className="text-sm text-sw-accent hover:underline">查看详情</Link>
                     {project.demoUrl && (
                       <Link to={project.demoUrl} className="text-sm text-sw-muted hover:text-sw-text flex items-center gap-1">
                         <ExternalLink size={14} /> Demo
@@ -116,7 +116,7 @@ export default function ProjectsPage() {
         </div>
 
         {filtered.length === 0 && (
-          <p className="text-center text-sw-muted py-12">No projects found.</p>
+          <p className="text-center text-sw-muted py-12">暂无项目。</p>
         )}
       </div>
     </div>

@@ -32,8 +32,8 @@ export default function BlogListPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h1 className="font-display text-4xl font-bold text-center mb-4">Experiment Log</h1>
-          <p className="text-sw-muted text-center mb-12">Notes, insights, and experiments</p>
+          <h1 className="font-display text-4xl font-bold text-center mb-4">实验日志</h1>
+          <p className="text-sw-muted text-center mb-12">笔记、洞察与实验记录</p>
         </motion.div>
 
         <div className="space-y-6">
@@ -51,7 +51,7 @@ export default function BlogListPage() {
                   <div className="h-1 w-full bg-gradient-to-r from-amber-500 to-orange-400" />
                   <div className="p-6">
                     <p className="text-sw-muted text-xs mb-2">
-                      {new Date(post.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      {new Date(post.publishedAt).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>
                     <h2 className="font-display text-xl font-semibold mb-2 group-hover:text-sw-accent transition-colors duration-300">{post.title}</h2>
                     {post.excerpt && <p className="text-sw-muted text-sm">{post.excerpt}</p>}
@@ -70,18 +70,18 @@ export default function BlogListPage() {
           ))}
         </div>
 
-        {posts.length === 0 && <p className="text-center text-sw-muted py-12">No posts yet.</p>}
+        {posts.length === 0 && <p className="text-center text-sw-muted py-12">暂无文章。</p>}
 
         {totalPages > 1 && (
           <div className="flex justify-center gap-3 mt-12">
             <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
               className="px-5 py-2 bg-white/55 backdrop-blur-sm rounded-full text-sm disabled:opacity-50 border border-white/50 hover:border-sw-accent/30 transition-all">
-              Previous
+              上一页
             </button>
-            <span className="px-4 py-2 text-sw-muted text-sm">Page {page + 1} of {totalPages}</span>
+            <span className="px-4 py-2 text-sw-muted text-sm">第 {page + 1} 页，共 {totalPages} 页</span>
             <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
               className="px-5 py-2 bg-white/55 backdrop-blur-sm rounded-full text-sm disabled:opacity-50 border border-white/50 hover:border-sw-accent/30 transition-all">
-              Next
+              下一页
             </button>
           </div>
         )}

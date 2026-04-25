@@ -37,7 +37,7 @@ export default function BlogPostPage() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  if (!post) return <div className="min-h-screen flex items-center justify-center text-sw-muted">Loading...</div>;
+  if (!post) return <div className="min-h-screen flex items-center justify-center text-sw-muted">加载中...</div>;
 
   return (
     <div className="min-h-screen relative" style={{ background: 'linear-gradient(170deg, #fffbeb 0%, #fef3c7 35%, #fff7ed 70%, #ffffff 100%)' }}>
@@ -60,7 +60,7 @@ export default function BlogPostPage() {
           transition={{ duration: 0.5 }}
         >
           <Link to="/blog" className="inline-flex items-center gap-2 text-sw-muted hover:text-sw-text mb-8 transition-colors">
-            <ArrowLeft size={18} /> Back to Experiment Log
+            <ArrowLeft size={18} /> 返回实验日志
           </Link>
         </motion.div>
 
@@ -70,7 +70,7 @@ export default function BlogPostPage() {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
           <p className="text-sw-muted text-sm mb-4">
-            {new Date(post.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            {new Date(post.publishedAt).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
           <h1 className="font-display text-4xl font-bold mb-6">{post.title}</h1>
 

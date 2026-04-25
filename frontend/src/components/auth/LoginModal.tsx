@@ -45,7 +45,7 @@ export default function LoginModal() {
         close();
         navigate('/admin', { replace: true });
       } else {
-        setError('Invalid credentials');
+        setError('用户名或密码错误');
       }
     } catch {
       setError('Invalid credentials');
@@ -95,7 +95,7 @@ export default function LoginModal() {
                 <h2 className="font-display text-3xl font-bold text-sw-text tracking-tight">
                   SingularityWalk
                 </h2>
-                <p className="mt-2 text-sw-muted text-sm">Sign in to Admin Panel</p>
+                <p className="mt-2 text-sw-muted text-sm">登录管理后台</p>
               </div>
 
               {error && (
@@ -107,7 +107,7 @@ export default function LoginModal() {
               <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
                 <div>
                   <label htmlFor="modal-username" className="block text-sm font-medium text-sw-muted mb-1.5">
-                    Username
+                    用户名
                   </label>
                   <input
                     id="modal-username"
@@ -116,13 +116,13 @@ export default function LoginModal() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="w-full px-4 py-2.5 bg-white/60 backdrop-blur-sm border border-white/40 rounded-xl text-sw-text placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                    placeholder="Enter username"
+                    placeholder="请输入用户名"
                     autoFocus
                   />
                 </div>
                 <div>
                   <label htmlFor="modal-password" className="block text-sm font-medium text-sw-muted mb-1.5">
-                    Password
+                    密码
                   </label>
                   <input
                     id="modal-password"
@@ -131,7 +131,7 @@ export default function LoginModal() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full px-4 py-2.5 bg-white/60 backdrop-blur-sm border border-white/40 rounded-xl text-sw-text placeholder-sw-muted/50 focus:outline-none focus:border-sw-accent focus:ring-1 focus:ring-sw-accent/30 transition-colors"
-                    placeholder="Enter password"
+                    placeholder="请输入密码"
                   />
                 </div>
                 <button
@@ -139,7 +139,7 @@ export default function LoginModal() {
                   disabled={loading}
                   className="w-full py-2.5 px-4 rounded-full text-sm font-semibold text-white bg-sw-accent hover:bg-sw-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sw-accent/50 shadow-md shadow-sw-accent/20"
                 >
-                  {loading ? 'Signing in...' : 'Sign In'}
+                  {loading ? '登录中...' : '登录'}
                 </button>
               </form>
             </div>

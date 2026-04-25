@@ -20,10 +20,10 @@ interface StatCard {
 
 function DashboardPage() {
   const [stats, setStats] = useState<StatCard[]>([
-    { title: 'Blog Posts', value: '-', description: 'Total published and draft posts', icon: <FileText size={20} />, loading: true },
-    { title: 'Projects', value: '-', description: 'Showcase projects', icon: <FolderOpen size={20} />, loading: true },
-    { title: 'Pending Messages', value: '-', description: 'Awaiting review', icon: <MessageSquare size={20} />, loading: true },
-    { title: 'Total Messages', value: '-', description: 'All guestbook entries', icon: <MessageCircle size={20} />, loading: true },
+    { title: '博客文章', value: '-', description: '已发布和草稿总数', icon: <FileText size={20} />, loading: true },
+    { title: '项目', value: '-', description: '展示项目数', icon: <FolderOpen size={20} />, loading: true },
+    { title: '待审核留言', value: '-', description: '等待审核', icon: <MessageSquare size={20} />, loading: true },
+    { title: '留言总数', value: '-', description: '所有留言条目', icon: <MessageCircle size={20} />, loading: true },
   ]);
 
   useEffect(() => {
@@ -71,10 +71,10 @@ function DashboardPage() {
     }
 
     setStats([
-      { title: 'Blog Posts', value: blogCount, description: 'Total published and draft posts', icon: <FileText size={20} />, loading: false },
-      { title: 'Projects', value: projectCount, description: 'Showcase projects', icon: <FolderOpen size={20} />, loading: false },
-      { title: 'Pending Messages', value: pendingCount, description: 'Awaiting review', icon: <MessageSquare size={20} />, loading: false },
-      { title: 'Total Messages', value: totalMessages, description: 'All guestbook entries', icon: <MessageCircle size={20} />, loading: false },
+      { title: '博客文章', value: blogCount, description: '已发布和草稿总数', icon: <FileText size={20} />, loading: false },
+      { title: '项目', value: projectCount, description: '展示项目数', icon: <FolderOpen size={20} />, loading: false },
+      { title: '待审核留言', value: pendingCount, description: '等待审核', icon: <MessageSquare size={20} />, loading: false },
+      { title: '留言总数', value: totalMessages, description: '所有留言条目', icon: <MessageCircle size={20} />, loading: false },
     ]);
   };
 
@@ -82,8 +82,8 @@ function DashboardPage() {
     <div className="space-y-6">
       {/* 页面标题 */}
       <div>
-        <h1 className="text-2xl font-bold text-sw-text">Dashboard</h1>
-        <p className="text-sw-muted text-sm mt-1">Overview of your site content</p>
+        <h1 className="text-2xl font-bold text-sw-text">仪表盘</h1>
+        <p className="text-sw-muted text-sm mt-1">站点内容概览</p>
       </div>
 
       {/* 统计卡片网格 */}

@@ -91,7 +91,7 @@ export default function MarkdownEditor({ value, onChange, placeholder, rows = 14
           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-sw-muted hover:text-sw-text bg-sw-surface-2 border border-sw-border rounded-lg hover:border-sw-accent/40 transition-colors disabled:opacity-50"
         >
           {uploading ? <Loader2 size={14} className="animate-spin" /> : <ImagePlus size={14} />}
-          {uploading ? 'Uploading...' : 'Upload Image'}
+          {uploading ? '上传中...' : '上传图片'}
         </button>
         <span className="text-xs text-sw-muted/50">Support drag & drop, Ctrl+V paste</span>
       </div>

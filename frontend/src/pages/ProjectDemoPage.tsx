@@ -196,10 +196,10 @@ export default function ProjectDemoPage() {
           disabled={demoState === 'starting' || demoState === 'stopping'}
           className="flex items-center gap-2 text-sm text-sw-muted hover:text-sw-text transition-colors disabled:opacity-50"
         >
-          &larr; Back
+          &larr; 返回
         </button>
         <span className="text-sm font-medium text-sw-text">
-          {project?.title || 'Loading...'}
+          {project?.title || '加载中...'}
         </span>
         <div className="w-16" /> {/* 居中用占位符 */}
       </div>

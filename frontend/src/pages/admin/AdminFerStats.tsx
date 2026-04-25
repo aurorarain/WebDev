@@ -40,7 +40,7 @@ export default function AdminFerStats() {
         setTotalPages(pageData.totalPages);
       }
     } catch {
-      setError('Failed to load FER history');
+      setError('加载情绪识别历史失败');
     } finally {
       setLoading(false);
     }
@@ -49,7 +49,7 @@ export default function AdminFerStats() {
   /* 格式化日期 */
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    return new Date(dateStr).toLocaleDateString('zh-CN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -78,10 +78,10 @@ export default function AdminFerStats() {
       <div>
         <div className="flex items-center gap-3">
           <BarChart3 className="text-sw-accent" size={24} />
-          <h1 className="text-2xl font-bold text-sw-text">FER Statistics</h1>
+          <h1 className="text-2xl font-bold text-sw-text">情绪识别统计</h1>
         </div>
         <p className="text-sw-muted text-sm mt-1">
-          View emotion recognition history for all users
+          查看所有用户的情绪识别历史
         </p>
       </div>
 
@@ -100,7 +100,7 @@ export default function AdminFerStats() {
       ) : records.length === 0 ? (
         /* 空状态 */
         <div className="bg-sw-surface rounded-xl border border-sw-border p-12 text-center">
-          <p className="text-sw-muted">No recognition history yet.</p>
+          <p className="text-sw-muted">暂无识别历史记录。</p>
         </div>
       ) : (
         <>
@@ -110,11 +110,11 @@ export default function AdminFerStats() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-sw-border">
-                    <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Date</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">User</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Emotion</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Confidence</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">Faces</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">日期</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">用户</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">情绪</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">置信度</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-sw-muted uppercase tracking-wider">人脸数</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-sw-border">
@@ -162,17 +162,17 @@ export default function AdminFerStats() {
                 disabled={page === 0}
                 className="px-3 py-1.5 rounded-md text-sm bg-sw-surface border border-sw-border text-sw-muted hover:text-sw-text disabled:opacity-50 transition-colors"
               >
-                Previous
+                上一页
               </button>
               <span className="text-sm text-sw-muted">
-                Page {page + 1} of {totalPages}
+                第 {page + 1} 页，共 {totalPages} 页
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={page >= totalPages - 1}
                 className="px-3 py-1.5 rounded-md text-sm bg-sw-surface border border-sw-border text-sw-muted hover:text-sw-text disabled:opacity-50 transition-colors"
               >
-                Next
+                下一页
               </button>
             </div>
           )}

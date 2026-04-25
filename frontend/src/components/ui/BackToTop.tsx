@@ -24,7 +24,7 @@ export default function BackToTop() {
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           onClick={scrollToTop}
           className="fixed bottom-8 right-8 z-50 w-11 h-11 flex items-center justify-center rounded-full bg-white/70 backdrop-blur-lg border border-white/60 shadow-lg hover:shadow-xl hover:bg-white/90 hover:-translate-y-0.5 transition-all duration-300 group"
-          aria-label="Back to top"
+          aria-label="回到顶部"
         >
           <ArrowUp size={18} className="text-sw-muted group-hover:text-sw-accent transition-colors" />
           {/* 外圈渐变光晕 */}

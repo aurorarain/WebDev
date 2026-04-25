@@ -59,11 +59,11 @@ export default function ProjectDetailPage() {
       if (content) {
         setReadmeContent(content);
       } else {
-        setReadmeContent(project.description || 'No detailed description available.');
+        setReadmeContent(project.description || '暂无详细描述。');
         setReadmeError(true);
       }
     } catch {
-      setReadmeContent(project.description || 'Failed to load README.');
+      setReadmeContent(project.description || 'README 加载失败。');
       setReadmeError(true);
     } finally {
       setReadmeLoading(false);
@@ -77,7 +77,7 @@ export default function ProjectDetailPage() {
     }
   }, [project, loadReadme]);
 
-  if (!project) return <div className="min-h-screen flex items-center justify-center text-sw-muted">Loading...</div>;
+  if (!project) return <div className="min-h-screen flex items-center justify-center text-sw-muted">加载中...</div>;
 
   return (
     <div className="min-h-screen relative" style={{ background: 'linear-gradient(170deg, #f0fdfa 0%, #ccfbf1 35%, #f0f9ff 70%, #ffffff 100%)' }}>
@@ -91,7 +91,7 @@ export default function ProjectDetailPage() {
           transition={{ duration: 0.5 }}
         >
           <Link to="/projects" className="inline-flex items-center gap-2 text-sw-muted hover:text-sw-text mb-8 transition-colors">
-            <ArrowLeft size={18} /> Back to Projects
+            <ArrowLeft size={18} /> 返回项目列表
           </Link>
         </motion.div>
 
@@ -128,13 +128,13 @@ export default function ProjectDetailPage() {
                 to={project.embeddedEnabled ? `/projects/${project.slug}/demo` : project.demoUrl}
                 className="px-6 py-2 bg-sw-accent text-white rounded-full hover:bg-sw-accent/90 transition-all duration-300 flex items-center gap-2 shadow-md shadow-sw-accent/20"
               >
-                <ExternalLink size={16} /> Live Demo
+                <ExternalLink size={16} /> 在线演示
               </Link>
             )}
             {project.repoUrl && (
               <a href={project.repoUrl} target="_blank" rel="noopener noreferrer"
                 className="px-6 py-2 bg-white/55 backdrop-blur-sm border border-white/50 text-sw-text rounded-full hover:border-sw-accent/40 transition-all duration-300 flex items-center gap-2">
-                <GithubIcon size={16} /> Source Code
+                <GithubIcon size={16} /> 源代码
               </a>
             )}
           </div>
@@ -145,7 +145,7 @@ export default function ProjectDetailPage() {
             {readmeLoading && (
               <div className="flex items-center gap-3 text-sw-muted py-8">
                 <div className="w-5 h-5 border-2 border-sw-accent border-t-transparent rounded-full animate-spin" />
-                <span>Loading README from GitHub...</span>
+                <span>正在从 GitHub 加载 README...</span>
               </div>
             )}
 
@@ -153,7 +153,7 @@ export default function ProjectDetailPage() {
             {readmeError && !readmeLoading && (
               <div className="flex items-center gap-2 text-amber-600 text-sm mb-6 p-3 bg-amber-50/50 rounded-lg border border-amber-200/30">
                 <AlertCircle size={16} />
-                <span>Could not load README from GitHub. Showing basic description instead.</span>
+                <span>无法从 GitHub 加载 README，正在显示基本描述。</span>
               </div>
             )}
 
