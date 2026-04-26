@@ -1,5 +1,6 @@
 package com.emotion.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -49,6 +50,7 @@ public class BlogPost {
     @Column(nullable = false)
     private BlogStatus status = BlogStatus.DRAFT;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private User author;
