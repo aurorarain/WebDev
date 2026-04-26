@@ -8,6 +8,11 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      idle-timeout: 300000
+      max-lifetime: 1200000
 
   # JPA 配置
   jpa:
@@ -18,6 +23,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
+        jdbc.batch_size: 20
+        order_inserts: true
+        order_updates: true
     defer-datasource-initialization: true
 
   # H2 控制台

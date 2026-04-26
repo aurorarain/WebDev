@@ -3,7 +3,6 @@ package com.emotion.controller;
 import com.emotion.dto.response.ApiResponse;
 import com.emotion.dto.response.PredictResponse;
 import com.emotion.dto.response.RealtimeFaceResponse;
-import com.emotion.entity.EmotionHistory;
 import com.emotion.model.EmotionType;
 import com.emotion.service.EmotionClassifier;
 import com.emotion.service.EmotionHistoryService;
@@ -16,15 +15,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @RestController
@@ -36,9 +34,9 @@ public class EmotionController {
     private final EmotionClassifier emotionClassifier;
     private final EmotionHistoryService historyService;
 
-    /**
-     * 文件上传方式识别情绪
-     */
+    private final ConcurrentHashMap<String, Long> lastRequestTime = new ConcurrentHashMap<>();
+    private static final long MIN_REALTIME_INTERVAL_MS = 100;
+
     @PostMapping(value = "/predict", consumes = "multipart/form-data")
     public ApiResponse<PredictResponse> predictFile(
             @RequestParam("file") MultipartFile file
@@ -48,15 +46,12 @@ public class EmotionController {
             byte[] imageBytes = file.getBytes();
             log.info("收到文件上传: {}, 大小: {} bytes", file.getOriginalFilename(), imageBytes.length);
             return processImage(imageBytes, startTime);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("图像处理错误", e);
             return ApiResponse.error("图像处理失败: " + e.getMessage());
         }
     }
 
-    /**
-     * Base64 方式识别情绪（摄像头实时捕获）
-     */
     @PostMapping(value = "/predict", consumes = "application/json")
     public ApiResponse<PredictResponse> predictBase64(
             @RequestBody Map<String, String> body
@@ -82,98 +77,96 @@ public class EmotionController {
         }
     }
 
-    private ApiResponse<PredictResponse> processImage(byte[] imageBytes, long startTime) throws IOException {
-        // 验证图像大小
+    private ApiResponse<PredictResponse> processImage(byte[] imageBytes, long startTime) {
         if (imageBytes.length > 10 * 1024 * 1024) {
             return ApiResponse.error("图像太大，请上传小于 10MB 的图像");
         }
 
-        // 检测人脸
-        Rect[] faces = faceDetector.detectFaces(imageBytes);
-
-        if (faces.length == 0) {
-            return ApiResponse.error("未检测到人脸");
+        Mat image = faceDetector.decodeImage(imageBytes);
+        if (image.empty()) {
+            return ApiResponse.error("无法解码图像");
         }
 
-        // 读取图像尺寸
-        BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
-        int width = bufferedImage.getWidth();
-        int height = bufferedImage.getHeight();
+        try {
+            int width = image.cols();
+            int height = image.rows();
 
-        // 识别每张人脸的情绪
-        PredictResponse.FaceResult[] results = new PredictResponse.FaceResult[faces.length];
+            Rect[] faces = faceDetector.detectFaces(image);
+            if (faces.length == 0) {
+                return ApiResponse.error("未检测到人脸");
+            }
 
-        for (int i = 0; i < faces.length; i++) {
-            Rect face = faces[i];
+            PredictResponse.FaceResult[] results = new PredictResponse.FaceResult[faces.length];
 
-            // 提取人脸像素
-            float[] pixels = faceDetector.extractFacePixels(imageBytes, face);
+            for (int i = 0; i < faces.length; i++) {
+                Rect face = faces[i];
+                float[] pixels = faceDetector.extractFacePixels(image, face);
+                float[] probabilities = emotionClassifier.predict(pixels);
 
-            // 预测情绪
-            float[] probabilities = emotionClassifier.predict(pixels);
-
-            // 找到最高概率的情绪
-            int maxIndex = 0;
-            float maxProb = probabilities[0];
-            for (int j = 1; j < probabilities.length; j++) {
-                if (probabilities[j] > maxProb) {
-                    maxProb = probabilities[j];
-                    maxIndex = j;
+                int maxIndex = 0;
+                float maxProb = probabilities[0];
+                for (int j = 1; j < probabilities.length; j++) {
+                    if (probabilities[j] > maxProb) {
+                        maxProb = probabilities[j];
+                        maxIndex = j;
+                    }
                 }
+
+                EmotionType emotion = EmotionType.fromIndex(maxIndex);
+
+                Map<String, Double> probMap = new HashMap<>();
+                for (EmotionType type : EmotionType.values()) {
+                    probMap.put(type.getZhName(), (double) probabilities[type.getIndex()]);
+                }
+
+                results[i] = new PredictResponse.FaceResult(
+                        new int[]{face.x, face.y, face.width, face.height},
+                        emotion.getZhName(),
+                        maxProb,
+                        probMap
+                );
+
+                log.info("人脸 {}: {} ({}%)", i + 1, emotion.getZhName(), String.format("%.2f", maxProb * 100));
             }
 
-            EmotionType emotion = EmotionType.fromIndex(maxIndex);
-
-            // 构建概率映射
-            Map<String, Double> probMap = new HashMap<>();
-            for (EmotionType type : EmotionType.values()) {
-                probMap.put(type.getZhName(), (double) probabilities[type.getIndex()]);
-            }
-
-            // 构建结果
-            results[i] = new PredictResponse.FaceResult(
-                    new int[]{face.x, face.y, face.width, face.height},
-                    emotion.getZhName(),
-                    maxProb,
-                    probMap
+            long processingTime = System.currentTimeMillis() - startTime;
+            PredictResponse response = new PredictResponse(
+                    results,
+                    processingTime / 1000.0,
+                    new PredictResponse.ImageSize(width, height)
             );
 
-            log.info("人脸 {}: {} ({}%)", i + 1, emotion.getZhName(), String.format("%.2f", maxProb * 100));
-        }
-
-        // 构建响应
-        long processingTime = System.currentTimeMillis() - startTime;
-        PredictResponse response = new PredictResponse(
-                results,
-                processingTime / 1000.0,
-                new PredictResponse.ImageSize(width, height)
-        );
-
-        // 保存历史记录（异步）
-        try {
-            var authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.isAuthenticated() 
-                && !"anonymousUser".equals(authentication.getName())) {
-                String username = authentication.getName();
-                String imagePath = "uploads/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".jpg";
-                historyService.saveHistory(username, imagePath, response);
-                log.info("历史记录已保存");
+            try {
+                var authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication != null && authentication.isAuthenticated()
+                    && !"anonymousUser".equals(authentication.getName())) {
+                    String username = authentication.getName();
+                    String imagePath = "uploads/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".jpg";
+                    historyService.saveHistory(username, imagePath, response);
+                }
+            } catch (Exception e) {
+                log.warn("保存历史记录失败: {}", e.getMessage());
             }
-        } catch (Exception e) {
-            log.warn("保存历史记录失败（用户未登录或其他错误）: {}", e.getMessage());
-        }
 
-        return ApiResponse.ok(response);
+            return ApiResponse.ok(response);
+        } finally {
+            image.release();
+        }
     }
 
-    /**
-     * 实时多人脸识别（轻量版，适合前端高频调用）
-     * 接收 Base64 图像，返回所有检测到的人脸坐标 + 情绪 + 置信度
-     */
     @PostMapping(value = "/predict-realtime", consumes = "application/json")
     public ApiResponse<RealtimeFaceResponse> predictRealtime(
-            @RequestBody Map<String, String> body
+            @RequestBody Map<String, String> body,
+            HttpServletRequest request
     ) {
+        String clientKey = request.getRemoteAddr();
+        long now = System.currentTimeMillis();
+        Long last = lastRequestTime.get(clientKey);
+        if (last != null && now - last < MIN_REALTIME_INTERVAL_MS) {
+            return ApiResponse.ok(new RealtimeFaceResponse(new RealtimeFaceResponse.FaceInfo[0]));
+        }
+        lastRequestTime.put(clientKey, now);
+
         try {
             String base64Image = body.get("image");
             if (base64Image == null || base64Image.isEmpty()) {
@@ -186,7 +179,6 @@ public class EmotionController {
 
             byte[] imageBytes = Base64.getDecoder().decode(base64Image);
 
-            // 只解码一次图像，避免 N+1 次重复解码
             Mat image = faceDetector.decodeImage(imageBytes);
             if (image.empty()) {
                 return ApiResponse.ok(new RealtimeFaceResponse(new RealtimeFaceResponse.FaceInfo[0]));
@@ -220,7 +212,7 @@ public class EmotionController {
                     faceInfos[i] = new RealtimeFaceResponse.FaceInfo(
                             face.x, face.y, face.width, face.height,
                             emotion.getZhName(),
-                            Math.round(maxProb * 1000) / 1000.0  // 保留3位小数
+                            Math.round(maxProb * 1000) / 1000.0
                     );
                 }
 

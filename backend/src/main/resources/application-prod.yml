@@ -7,6 +7,11 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      idle-timeout: 300000
+      max-lifetime: 1200000
 
   jpa:
     hibernate:
@@ -16,6 +21,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
+        jdbc.batch_size: 20
+        order_inserts: true
+        order_updates: true
 
   sql:
     init:

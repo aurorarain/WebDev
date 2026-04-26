@@ -71,7 +71,12 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture, isCapturing })
     let stopped = false;
     const loop = async () => {
       while (!stopped) {
+        const start = Date.now();
         await processRealtimeFrame();
+        const elapsed = Date.now() - start;
+        if (elapsed < 150) {
+          await new Promise(r => setTimeout(r, 150 - elapsed));
+        }
       }
     };
     loop();

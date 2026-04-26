@@ -6,6 +6,8 @@ import com.emotion.entity.BlogPost.BlogStatus;
 import com.emotion.entity.User;
 import com.emotion.repository.BlogPostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -24,9 +26,7 @@ public class BlogPostService {
 
     private final BlogPostRepository blogPostRepository;
 
-    /**
-     * 获取已发布文章（分页）
-     */
+    @Cacheable(value = "blogPosts", key = "'published-' + #page + '-' + #size")
     public Page<BlogPost> getPublishedPosts(int page, int size) {
         return blogPostRepository.findByStatusOrderByPublishedAtDesc(
                 BlogStatus.PUBLISHED,
@@ -34,9 +34,7 @@ public class BlogPostService {
         );
     }
 
-    /**
-     * 根据 slug 获取已发布文章
-     */
+    @Cacheable(value = "blogPosts", key = "'slug-' + #slug")
     public Optional<BlogPost> getPublishedBySlug(String slug) {
         return blogPostRepository.findBySlugAndStatus(slug, BlogStatus.PUBLISHED);
     }
@@ -50,9 +48,7 @@ public class BlogPostService {
         );
     }
 
-    /**
-     * 创建文章
-     */
+    @CacheEvict(value = "blogPosts", allEntries = true)
     @Transactional
     public BlogPost createPost(BlogPostRequest request, User author) {
         BlogPost post = new BlogPost();
@@ -65,9 +61,7 @@ public class BlogPostService {
         return blogPostRepository.save(post);
     }
 
-    /**
-     * 更新文章
-     */
+    @CacheEvict(value = "blogPosts", allEntries = true)
     @Transactional
     public BlogPost updatePost(Long id, BlogPostRequest request) {
         BlogPost post = blogPostRepository.findById(id)
@@ -81,9 +75,7 @@ public class BlogPostService {
         return blogPostRepository.save(post);
     }
 
-    /**
-     * 删除文章
-     */
+    @CacheEvict(value = "blogPosts", allEntries = true)
     @Transactional
     public void deletePost(Long id) {
         blogPostRepository.deleteById(id);

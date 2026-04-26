@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 @Slf4j
 @Service
@@ -26,6 +27,7 @@ public class EmotionClassifier {
 
     private OrtEnvironment env;
     private OrtSession session;
+    private final Semaphore inferenceSemaphore = new Semaphore(1);
 
     @PostConstruct
     public void init() throws Exception {
@@ -63,24 +65,28 @@ public class EmotionClassifier {
      */
     public float[] predict(float[] imageData) {
         try {
-            long[] shape = {1, 3, 300, 300};
-            FloatBuffer inputBuffer = FloatBuffer.wrap(imageData);
-            var inputTensor = ai.onnxruntime.OnnxTensor.createTensor(env, inputBuffer, shape);
+            inferenceSemaphore.acquire();
+            try {
+                long[] shape = {1, 3, 300, 300};
+                FloatBuffer inputBuffer = FloatBuffer.wrap(imageData);
+                var inputTensor = ai.onnxruntime.OnnxTensor.createTensor(env, inputBuffer, shape);
 
-            // 运行推理
-            OrtSession.Result result = session.run(
-                    Map.of("input", inputTensor)
-            );
+                OrtSession.Result result = session.run(
+                        Map.of("input", inputTensor)
+                );
 
-            // 获取输出
-            float[][] output = (float[][]) result.get(0).getValue();
+                float[][] output = (float[][]) result.get(0).getValue();
 
-            // 应用 softmax 将原始 logits 转换为概率
-            return softmax(output[0]);
-
+                return softmax(output[0]);
+            } finally {
+                inferenceSemaphore.release();
+            }
         } catch (OrtException e) {
             log.error("ONNX 推理错误", e);
             throw new RuntimeException("情绪预测失败", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("推理被中断", e);
         }
     }
 

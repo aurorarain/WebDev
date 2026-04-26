@@ -12,7 +12,10 @@ import java.time.LocalDateTime;
  * 博客文章实体 - 实验日志
  */
 @Entity
-@Table(name = "blog_posts")
+@Table(name = "blog_posts", indexes = {
+        @Index(name = "idx_blog_slug", columnList = "slug"),
+        @Index(name = "idx_blog_status_published", columnList = "status, published_at")
+})
 @Data
 @EntityListeners(AuditingEntityListener.class)
 public class BlogPost {

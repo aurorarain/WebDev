@@ -13,11 +13,10 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.time.Duration;
 import java.util.Optional;
 
-/**
- * Web MVC 配置 - 处理嵌入式项目的静态文件服务和 API 代理
- */
 @Configuration
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -30,50 +29,51 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    /**
-     * 配置静态资源处理：/embedded/{slug}/** 映射到嵌入式项目的前端构建目录
-     */
+    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(5))
+            .build();
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 嵌入式项目静态文件
         registry.addResourceHandler("/embedded/**")
                 .addResourceLocations("file:" + embeddedProjectsDir + "/");
-        // 上传的图片文件
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadDir + "/");
     }
 
-    /**
-     * 添加 API 代理拦截器：将 /embedded/{slug}/api/** 请求转发到对应项目的后端
-     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new HandlerInterceptor() {
+            @Override
+            public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+                String path = request.getRequestURI();
+                if (path.startsWith("/api/site") || path.startsWith("/api/health")) {
+                    response.setHeader("Cache-Control", "public, max-age=300");
+                } else if (path.startsWith("/api/projects") || path.startsWith("/api/blog")) {
+                    response.setHeader("Cache-Control", "public, max-age=60");
+                }
+                return true;
+            }
+        });
         registry.addInterceptor(new EmbeddedApiProxyInterceptor(projectRepository));
     }
 
-    /**
-     * 嵌入式项目 API 代理拦截器
-     * 将前端请求 /embedded/{slug}/api/** 转发到 localhost:{port}/api/**
-     */
     @RequiredArgsConstructor
-    private static class EmbeddedApiProxyInterceptor implements HandlerInterceptor {
+    private class EmbeddedApiProxyInterceptor implements HandlerInterceptor {
 
         private final ProjectRepository projectRepository;
 
         @Override
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
             String path = request.getRequestURI();
-            // 只处理包含 /api/ 路径的嵌入式项目请求
             if (!path.startsWith("/embedded/") || !path.contains("/api/")) {
                 return true;
             }
 
-            // 从路径中提取 slug: /embedded/{slug}/api/...
             String[] parts = path.split("/");
             if (parts.length < 4) return true;
             String slug = parts[2];
 
-            // 查找项目及其后端端口配置
             Optional<Project> projectOpt = projectRepository.findBySlug(slug);
             if (projectOpt.isEmpty() || projectOpt.get().getBackendPort() == null) {
                 response.sendError(404, "Project backend not configured");
@@ -84,27 +84,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
             String apiPath = path.substring(("/embedded/" + slug).length());
             String targetUrl = "http://localhost:" + port + apiPath;
 
-            // 转发请求到项目后端
             proxyRequest(request, response, targetUrl);
             return false;
         }
 
-        /**
-         * 执行代理请求转发
-         */
         private void proxyRequest(HttpServletRequest request, HttpServletResponse response, String targetUrl) {
             try {
-                // 拼接查询字符串
                 String queryString = request.getQueryString();
                 if (queryString != null) {
                     targetUrl += "?" + queryString;
                 }
 
-                java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
                 java.net.http.HttpRequest.Builder reqBuilder = java.net.http.HttpRequest.newBuilder()
                         .uri(URI.create(targetUrl));
 
-                // 处理 POST/PUT 请求体
                 String method = request.getMethod();
                 if ("POST".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method)) {
                     byte[] body = request.getInputStream().readAllBytes();
@@ -117,8 +110,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                     reqBuilder.method(method, java.net.http.HttpRequest.BodyPublishers.noBody());
                 }
 
-                // 发送请求并写入响应
-                java.net.http.HttpResponse<byte[]> httpResponse = client.send(
+                java.net.http.HttpResponse<byte[]> httpResponse = HTTP_CLIENT.send(
                         reqBuilder.build(),
                         java.net.http.HttpResponse.BodyHandlers.ofByteArray()
                 );
@@ -126,7 +118,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 response.setStatus(httpResponse.statusCode());
                 httpResponse.headers().map().forEach((name, values) -> {
                     for (String value : values) {
-                        // 跳过 content-length 和 transfer-encoding 以避免冲突
                         if (!name.equalsIgnoreCase("content-length")
                                 && !name.equalsIgnoreCase("transfer-encoding")) {
                             response.addHeader(name, value);
@@ -138,7 +129,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 try {
                     response.sendError(502, "Backend unavailable: " + e.getMessage());
                 } catch (Exception ignored) {
-                    // 响应已提交，无法再发送错误
                 }
             }
         }

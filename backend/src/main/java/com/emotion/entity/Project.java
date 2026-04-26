@@ -12,7 +12,10 @@ import java.time.LocalDateTime;
  * 项目实体 - 用于项目展廊
  */
 @Entity
-@Table(name = "projects")
+@Table(name = "projects", indexes = {
+        @Index(name = "idx_project_slug", columnList = "slug"),
+        @Index(name = "idx_project_featured_sort", columnList = "featured, sort_order")
+})
 @Data
 @EntityListeners(AuditingEntityListener.class)
 public class Project {

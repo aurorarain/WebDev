@@ -4,6 +4,7 @@ import com.emotion.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,9 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-/**
- * 文件上传控制器 - 处理图片上传和孤立图片清理
- */
 @Slf4j
 @RestController
 @RequestMapping("/api/upload")
@@ -30,17 +28,11 @@ public class UploadController {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    /** 允许上传的图片 MIME 类型 */
     private static final Set<String> ALLOWED_TYPES = Set.of(
             "image/jpeg", "image/png", "image/gif", "image/webp"
     );
-    /** 单文件最大 5MB */
     private static final long MAX_SIZE = 5 * 1024 * 1024;
 
-    /**
-     * 上传图片文件
-     * 按 yyyy-MM-dd 日期分目录存储，返回可访问的 URL 路径
-     */
     @PostMapping("/image")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Map<String, String>>> uploadImage(
@@ -79,19 +71,17 @@ public class UploadController {
         }
     }
 
-    /**
-     * 清理未被任何内容引用的孤立图片
-     * 接收当前内容文本，扫描其中引用的图片 URL，删除 uploads/images/ 中未被引用的文件
-     */
     @PostMapping("/cleanup-images")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Integer>> cleanupOrphanedImages(
+    public ResponseEntity<ApiResponse<String>> cleanupOrphanedImages(
             @RequestBody Map<String, String> body) {
 
-        String content = body.get("content");
-        if (content == null) content = "";
+        String content = body.getOrDefault("content", "");
+        Path imagesDir = Paths.get(uploadDir, "images");
+        if (!Files.exists(imagesDir)) {
+            return ResponseEntity.ok(ApiResponse.success("无需清理"));
+        }
 
-        // 从内容中提取所有 /uploads/images/xxx 的 URL
         Set<String> referencedUrls = new HashSet<>();
         Pattern pattern = Pattern.compile("/uploads/images/[^\\s)\"']+");
         Matcher matcher = pattern.matcher(content);
@@ -99,12 +89,12 @@ public class UploadController {
             referencedUrls.add(matcher.group());
         }
 
-        // 扫描 uploads/images/ 目录
-        Path imagesDir = Paths.get(uploadDir, "images");
-        if (!Files.exists(imagesDir)) {
-            return ResponseEntity.ok(ApiResponse.success(0));
-        }
+        doCleanup(imagesDir, referencedUrls);
+        return ResponseEntity.ok(ApiResponse.success("清理完成"));
+    }
 
+    @Async("taskExecutor")
+    public void doCleanup(Path imagesDir, Set<String> referencedUrls) {
         int deleted = 0;
         try (Stream<Path> walk = Files.walk(imagesDir)) {
             deleted = walk
@@ -127,8 +117,6 @@ public class UploadController {
         } catch (IOException e) {
             log.error("Failed to scan images directory", e);
         }
-
         log.info("Cleanup complete: deleted {} orphaned images", deleted);
-        return ResponseEntity.ok(ApiResponse.success(deleted));
     }
 }

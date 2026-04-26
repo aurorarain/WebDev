@@ -5,6 +5,8 @@ import com.emotion.entity.Project;
 import com.emotion.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,16 +31,12 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectProcessManager processManager;
 
-    /**
-     * 获取所有项目（按排序字段升序）
-     */
+    @Cacheable(value = "projects", key = "'all'")
     public List<Project> getAllProjects() {
         return projectRepository.findAllByOrderBySortOrderAsc();
     }
 
-    /**
-     * 根据 slug 获取单个项目
-     */
+    @Cacheable(value = "projects", key = "#slug")
     public Optional<Project> getBySlug(String slug) {
         return projectRepository.findBySlug(slug);
     }
@@ -50,9 +48,7 @@ public class ProjectService {
         return projectRepository.findById(id);
     }
 
-    /**
-     * 创建项目
-     */
+    @CacheEvict(value = "projects", allEntries = true)
     @Transactional
     public Project createProject(ProjectRequest request) {
         Project project = new Project();
@@ -60,9 +56,7 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    /**
-     * 更新项目
-     */
+    @CacheEvict(value = "projects", allEntries = true)
     @Transactional
     public Project updateProject(Long id, ProjectRequest request) {
         Project project = projectRepository.findById(id)
@@ -71,9 +65,7 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    /**
-     * 删除项目（同时停止运行中的进程并清理服务器上的项目文件）
-     */
+    @CacheEvict(value = "projects", allEntries = true)
     @Transactional
     public void deleteProject(Long id) {
         Project project = projectRepository.findById(id).orElse(null);
