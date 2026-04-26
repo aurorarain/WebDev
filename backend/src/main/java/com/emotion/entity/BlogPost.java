@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 /**
- * 博客文章实体 - 实验日志
+ * 博客文章实体
  */
 @Entity
 @Table(name = "blog_posts", indexes = {

@@ -14,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 博客控制器 - 提供实验日志的 CRUD 接口
+ * 博客控制器 - 提供博客文章的 CRUD 接口
  */
 @RestController
 @RequestMapping("/api/blog")

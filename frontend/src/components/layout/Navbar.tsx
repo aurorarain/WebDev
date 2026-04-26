@@ -40,7 +40,7 @@ export default function Navbar() {
     { to: '/', label: '首页' },
     { to: '/about', label: '关于' },
     { to: '/projects', label: '项目' },
-    { to: '/blog', label: '实验日志' },
+    { to: '/blog', label: '博客' },
     { to: '/guestbook', label: '留言板' },
   ];
 

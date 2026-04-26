@@ -308,17 +308,17 @@ export default function HomePage() {
             </motion.div>
           )}
         </div>
-        {/* 过渡 → 最新实验 */}
+        {/* 过渡 → 最新博客 */}
         <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
           style={{ background: 'linear-gradient(to bottom, transparent 0%, #f8f9ff 100%)' }} />
       </section>
 
-      {/* ====== 最新实验 — 极淡蓝 ====== */}
+      {/* ====== 最新博客 — 极淡蓝 ====== */}
       <section className="relative py-28 px-4 overflow-hidden" style={{ background: 'linear-gradient(160deg, #f8f9ff 0%, #f2f4ff 40%, #fafaff 100%)' }}>
         <div className="absolute top-[-10%] left-[20%] w-[300px] h-[300px] bg-indigo-100/6 rounded-full blur-[45px] pointer-events-none" />
         <div className="absolute bottom-0 right-[-10%] w-[250px] h-[250px] bg-blue-100/6 rounded-full blur-[40px] pointer-events-none" />
         <div className="relative z-10">
-          <SectionTitle title="最新实验" subtitle="来自工作台的笔记、洞察与经验。" />
+          <SectionTitle title="最新博客" subtitle="笔记、洞察与技术分享" />
           {recentPosts.length > 0 ? (
             <>
               <motion.div

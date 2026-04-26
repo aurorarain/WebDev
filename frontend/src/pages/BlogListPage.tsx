@@ -32,8 +32,8 @@ export default function BlogListPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h1 className="font-display text-4xl font-bold text-center mb-4">实验日志</h1>
-          <p className="text-sw-muted text-center mb-12">笔记、洞察与实验记录</p>
+          <h1 className="font-display text-4xl font-bold text-center mb-4">博客</h1>
+          <p className="text-sw-muted text-center mb-12">笔记、洞察与技术文章</p>
         </motion.div>
 
         <div className="space-y-6">

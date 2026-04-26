@@ -37,8 +37,9 @@ export default function AdminBlogEditor() {
       setLoading(true);
       try {
         const response = await blogApi.getAllPosts(0, 100);
-        const data = response.data as PaginatedResponse<BlogPost>;
-        const post = data.content.find((p) => p.id === Number(id));
+        /* 后端返回 ApiResponse<Page<BlogPost>>，需要两层解包：response.data.data */
+        const pageData = response.data?.data as PaginatedResponse<BlogPost> | undefined;
+        const post = (pageData?.content || []).find((p) => p.id === Number(id));
         if (post) {
           setTitle(post.title);
           setSlug(post.slug);
@@ -60,18 +61,22 @@ export default function AdminBlogEditor() {
     loadPost();
   }, [id, isEditing]);
 
-  /* 根据标题自动生成 slug */
+  /* 根据标题自动生成 slug（支持中文标题：生成时间戳 + 简单拼音策略） */
   const handleTitleChange = (val: string) => {
     setTitle(val);
     if (!isEditing) {
-      setSlug(
-        val
-          .toLowerCase()
-          .replace(/[^a-z0-9\s-]/g, '')
-          .replace(/\s+/g, '-')
-          .replace(/-+/g, '-')
-          .trim()
-      );
+      /* 尝试从标题提取英文/数字部分，若为空则使用时间戳 */
+      let generated = val
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+      if (!generated) {
+        /* 纯中文标题：使用 post- + 时间戳作为 slug */
+        generated = 'post-' + Date.now();
+      }
+      setSlug(generated);
     }
   };
 
@@ -82,12 +87,18 @@ export default function AdminBlogEditor() {
       return;
     }
 
+    /* 如果 slug 为空（纯中文标题且未手动填写），自动生成一个 */
+    let finalSlug = slug.trim();
+    if (!finalSlug) {
+      finalSlug = 'post-' + Date.now();
+    }
+
     setSaving(true);
     setError('');
 
     const postData = {
       title: title.trim(),
-      slug: slug.trim(),
+      slug: finalSlug,
       category: category.trim(),
       tags: tags.trim(),
       excerpt: excerpt.trim(),
@@ -104,8 +115,10 @@ export default function AdminBlogEditor() {
       /* 清理孤立图片 */
       siteApi.cleanupImages(content).catch(() => {});
       navigate('/admin/blog');
-    } catch {
-      setError('保存文章失败');
+    } catch (err: any) {
+      /* 显示更详细的错误信息帮助调试 */
+      const msg = err?.response?.data?.message || err?.message || '保存文章失败';
+      setError(msg);
     } finally {
       setSaving(false);
     }
