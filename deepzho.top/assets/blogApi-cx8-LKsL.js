@@ -1,0 +1,1 @@
+import{a as t}from"./apiClient-CWno9EtW.js";const e={getPublishedPosts:(e=0,s=10)=>t.get("/blog",{params:{page:e,size:s}}),getPost:e=>t.get(`/blog/${e}`),getAllPosts:(e=0,s=20)=>t.get("/blog/admin/all",{params:{page:e,size:s}}),createPost:e=>t.post("/blog",e),updatePost:(e,s)=>t.put(`/blog/${e}`,s),deletePost:e=>t.delete(`/blog/${e}`)};export{e as b};

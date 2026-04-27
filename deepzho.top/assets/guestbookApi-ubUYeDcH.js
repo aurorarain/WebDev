@@ -1,0 +1,1 @@
+import{a as e}from"./apiClient-DGhX3STB.js";const s={getMessages:(s=0,a=20)=>e.get("/guestbook",{params:{page:s,size:a}}),submitMessage:s=>e.post("/guestbook",s),getAllMessages:(s=0,a=20)=>e.get("/guestbook/admin/all",{params:{page:s,size:a}}),approveMessage:s=>e.put(`/guestbook/admin/${s}/approve`),deleteMessage:s=>e.delete(`/guestbook/admin/${s}`)};export{s as g};

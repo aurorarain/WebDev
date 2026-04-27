@@ -21,6 +21,7 @@ const GithubIcon = ({ size = 20 }: { size?: number }) => (
 /**
  * 页脚组件
  * - 左侧版权声明，动态显示当前年份
+ * - ICP 备案号
  * - 右侧 GitHub 和 Email 社交链接
  */
 export default function Footer() {
@@ -28,9 +29,19 @@ export default function Footer() {
     <footer className="border-t border-sw-border bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sw-muted text-sm">
-            &copy; {new Date().getFullYear()} SingularityWalk. 以好奇心驱动。
-          </p>
+          <div className="flex flex-col items-center md:items-start gap-1">
+            <p className="text-sw-muted text-sm">
+              &copy; {new Date().getFullYear()} SingularityWalk. 以好奇心驱动。
+            </p>
+            <a
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sw-muted text-xs hover:text-sw-accent transition-colors"
+            >
+              苏ICP备2026025293号
+            </a>
+          </div>
           <div className="flex items-center gap-4">
             <a
               href="https://github.com/aurorarain"
